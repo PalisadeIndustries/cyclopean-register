@@ -4,8 +4,6 @@ A collaborative workboard for the Cyclopean rules project. Contributors file
 factions, units, and abilities into a branching register, propose mechanics on a
 second board, and annotate anything.
 
-Live site: <https://palisadeindustries.github.io/cyclopean-register/>
-
 ---
 
 ## For contributors
