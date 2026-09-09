@@ -475,7 +475,7 @@ input,textarea,select{font:inherit;color:inherit}
         <label for="whoName">Filed by</label>
         <input id="whoName" type="text" placeholder="Your name" autocomplete="off">
       </div>
-      <button class="mini-btn" id="syncBtn"><span class="sync-dot" id="syncDot"></span><span id="syncLabel">Working offline</span></button>
+      <button class="mini-btn" id="syncBtn"><span class="sync-dot" id="syncDot"></span><span id="syncLabel">Connecting…</span></button>
       <button class="mini-btn" id="dataBtn">Import / export</button>
     </div>
     <div class="mast-form">
@@ -608,12 +608,35 @@ function saveLocal(){
 }
 
 /* --- Firebase --- */
+
+/* Shipped config. Contributors open the link and are connected — no paste step.
+   A web config is not a secret; the database rules are what protect the data. */
+const BUILT_IN_CONFIG = {
+  apiKey: "AIzaSyCxYRKGkzGZeiQHjyqq43wLrmBaD_GTHHU",
+  authDomain: "cyclopean-register.firebaseapp.com",
+  databaseURL: "https://cyclopean-register-default-rtdb.firebaseio.com",
+  projectId: "cyclopean-register",
+  storageBucket: "cyclopean-register.firebasestorage.app",
+  messagingSenderId: "942586848147",
+  appId: "1:942586848147:web:234515acac38a1ef633e66"
+};
+const BUILT_IN_BOARD = 'cyclopean';
+
 let fbRefs = null;
 async function connectFirebase(cfg, boardId, quiet){
   try{
     const appMod = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
     const dbMod  = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js');
     const app = appMod.initializeApp(cfg, 'cyclopean-'+Math.random().toString(36).slice(2,6));
+
+    /* Sign in anonymously if the project allows it. Harmless while the rules are
+       open; the moment Anonymous auth is enabled and the rules require auth,
+       this is what keeps the board working. */
+    try{
+      const authMod = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
+      await authMod.signInAnonymously(authMod.getAuth(app));
+    }catch(e){ /* anonymous auth not enabled — carry on with open rules */ }
+
     const db  = dbMod.getDatabase(app);
     const base = 'boards/'+(boardId||'cyclopean');
     fbRefs = {
@@ -1117,47 +1140,51 @@ function setWho(v){
 /* ---------- sync setup ---------- */
 function syncDialog(){
   const saved = JSON.parse(localStorage.getItem('cyc.fb')||'null');
-  const m = modal('Share this board with other people',
-    `<p>On its own this board saves to your browser only. To let other people file and annotate records at the same time, point it at a free Firebase Realtime Database.</p>
-     <ol>
-       <li>Make a project at <code>console.firebase.google.com</code>, then add a Realtime Database.</li>
-       <li>Under Project settings, register a web app and copy its config object.</li>
-       <li>Paste the config below, pick a board name, and connect.</li>
-       <li>Host this file anywhere static — GitHub Pages, Netlify, your own server — and send the link out.</li>
-     </ol>
-     <div class="field"><label class="flab" for="fbBoard">Board name</label>
-       <input id="fbBoard" type="text" value="${esc((saved&&saved.boardId)||'cyclopean')}" placeholder="cyclopean"></div>
-     <div class="field"><label class="flab" for="fbCfg">Firebase config</label>
-       <textarea id="fbCfg" placeholder='{ "apiKey": "...", "authDomain": "...", "databaseURL": "https://....firebasedatabase.app", "projectId": "..." }'>${esc(saved?JSON.stringify(saved.cfg,null,2):'')}</textarea></div>
-     <p style="font-size:12.5px">Anyone with the link can read and write, so treat the board as open to your contributors. Set the database rules to read/write true while drafting, then lock them down when you are done.</p>`,
-    '<button class="solid" id="go">Connect</button>'+
-    (saved?'<button class="ghost" id="off">Disconnect and work offline</button>':'')
-  );
-  m.host.querySelector('#go').onclick = async ()=>{
-    let cfg;
+  const live  = state.backend === 'firebase';
+  const cfg   = (saved && saved.cfg) || BUILT_IN_CONFIG;
+  const board = (saved && saved.boardId) || BUILT_IN_BOARD;
+
+  const status = live
+    ? `<p>Connected to the shared board <code>${esc(board)}</code>. Everything you file or annotate appears for everyone else on this link, and their changes appear here.</p>`
+    : `<p>Not connected. The board is saving to this browser only, so nobody else can see your records. Check your connection and reload — the shared board is configured and should connect on its own.</p>`;
+
+  const m = modal(live ? 'Connected to the shared board' : 'Not connected',
+    status +
+    `<p style="font-size:12.5px">Export a copy from Import / export before any large change if you want a rollback point.</p>
+     <details style="margin-top:6px"><summary style="cursor:pointer;font-family:var(--form);font-size:11px;letter-spacing:.06em;color:var(--ink-2)">Point this at a different database</summary>
+       <div style="padding-top:12px">
+         <p style="font-size:12.5px">Only needed for a separate board — a playtest branch, or a second project. Leave this alone otherwise.</p>
+         <div class="field"><label class="flab" for="fbBoard">Board name</label>
+           <input id="fbBoard" type="text" value="${esc(board)}"></div>
+         <div class="field"><label class="flab" for="fbCfg">Firebase config</label>
+           <textarea id="fbCfg">${esc(JSON.stringify(cfg, null, 2))}</textarea></div>
+         <button class="solid" id="go" style="margin-right:8px">Connect to this instead</button>
+         ${saved?'<button class="ghost" id="reset">Back to the default board</button>':''}
+       </div>
+     </details>`,
+    '<button class="ghost" id="done">Close</button>');
+
+  m.host.querySelector('#done').onclick = m.close;
+
+  const go = m.host.querySelector('#go');
+  if(go) go.onclick = async ()=>{
+    let parsed;
     const raw = m.host.querySelector('#fbCfg').value.trim()
       .replace(/^const\s+\w+\s*=\s*/,'').replace(/;$/,'');
-    try{ cfg = JSON.parse(raw); }
+    try{ parsed = JSON.parse(raw); }
     catch(e){
-      try{ cfg = (new Function('return ('+raw+')'))(); }
-      catch(e2){ toast('That config could not be read. Paste the object including its braces.'); return; }
+      try{ parsed = (new Function('return ('+raw+')'))(); }
+      catch(e2){ toast('That config could not be read.'); return; }
     }
-    if(!cfg || !cfg.databaseURL){ toast('The config needs a databaseURL.'); return; }
-    const boardId = m.host.querySelector('#fbBoard').value.trim()||'cyclopean';
-    localStorage.setItem('cyc.fb', JSON.stringify({cfg, boardId}));
+    if(!parsed || !parsed.databaseURL){ toast('The config needs a databaseURL.'); return; }
+    const boardId = m.host.querySelector('#fbBoard').value.trim() || BUILT_IN_BOARD;
+    localStorage.setItem('cyc.fb', JSON.stringify({cfg:parsed, boardId}));
     m.close();
-    setSync('','Connecting…');
-    const localSnapshot = {nodes:{...state.nodes}, anns:{...state.anns}};
-    const ok = await connectFirebase(cfg, boardId);
-    if(ok && !Object.keys(state.nodes).length && Object.keys(localSnapshot.nodes).length){
-      if(confirm('The shared board is empty. Upload the records currently on this device?')){
-        Object.values(localSnapshot.nodes).forEach(putNode);
-        Object.values(localSnapshot.anns).forEach(putAnn);
-      }
-    }
+    location.reload();
   };
-  const off = m.host.querySelector('#off');
-  if(off) off.onclick = ()=>{ localStorage.removeItem('cyc.fb'); m.close(); location.reload(); };
+
+  const reset = m.host.querySelector('#reset');
+  if(reset) reset.onclick = ()=>{ localStorage.removeItem('cyc.fb'); location.reload(); };
 }
 
 /* ---------- import / export ---------- */
@@ -1975,16 +2002,19 @@ function seed(){
    ========================================================================== */
 (async function boot(){
   const saved = JSON.parse(localStorage.getItem('cyc.fb')||'null');
-  if(saved && saved.cfg){
+  const cfg     = (saved && saved.cfg) || BUILT_IN_CONFIG;
+  const boardId = (saved && saved.boardId) || BUILT_IN_BOARD;
+  if(cfg){
     setSync('','Connecting…');
-    await connectFirebase(saved.cfg, saved.boardId, true);
+    await connectFirebase(cfg, boardId, true);
   }
   if(state.backend==='local'){
     const had = loadLocal();
-    if(!had && !localStorage.getItem('cyc.seeded')){
+    /* only seed a board that has no shared database behind it */
+    if(!had && !BUILT_IN_CONFIG && !localStorage.getItem('cyc.seeded')){
       seed(); localStorage.setItem('cyc.seeded','1');
     }
-    setSync('','Working offline');
+    setSync(BUILT_IN_CONFIG?'err':'', BUILT_IN_CONFIG?'Offline — not syncing':'Working offline');
   }
   render();
 })();

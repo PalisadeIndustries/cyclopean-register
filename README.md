@@ -4,7 +4,7 @@ A collaborative workboard for the Cyclopean rules project. Contributors file
 factions, units, and abilities into a branching register, propose mechanics on a
 second board, and annotate anything.
 
-Live site: `https://<username>.github.io/<repo>/`
+Live site: <https://palisadeindustries.github.io/cyclopean-register/>
 
 ---
 
@@ -13,12 +13,10 @@ Live site: `https://<username>.github.io/<repo>/`
 1. Open the link.
 2. Type your name into **Filed by** in the top bar. Everything you file or
    annotate is attributed to it.
-3. Click **Sync**, paste the Firebase config you were sent, and leave the board
-   name as `cyclopean`. The dot turns green when you are connected to the shared
-   board. You only do this once per device.
-
-Without that third step you are working on a private copy in your own browser,
-which is fine for drafting but nobody else sees it.
+That is the whole setup. The board connects to the shared database on its own —
+the dot next to **Sync** in the top bar turns green once it has. If it does not,
+you are working on a private copy in your own browser and nobody else can see
+your records; reload and check your connection.
 
 ### Filing a record
 
@@ -56,7 +54,10 @@ file and commit. GitHub Pages redeploys within a minute or two.
 ### The database
 
 Records live in a Firebase Realtime Database, not in this repository, so
-deploying never touches anyone's work. Free tier covers this comfortably.
+deploying never touches anyone's work. Free tier covers this comfortably. The
+config is compiled into `index.html`, which is why contributors have nothing to
+set up. A Firebase web config is not a secret — the rules below are what protect
+the data.
 
 Rules should be scoped to the board path:
 
@@ -75,6 +76,11 @@ Rules should be scoped to the board path:
 
 Do not leave the console's default test-mode rules in place — they expire after
 a trial period and the board silently stops syncing.
+
+To close the board to anyone who finds the database URL in this public
+repository, enable **Anonymous** sign-in under Authentication and change both
+rules to `"auth != null"`. The site already signs in anonymously on load, so
+nothing needs rebuilding and contributors see no login screen.
 
 ### Backups
 
