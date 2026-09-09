@@ -1,0 +1,2023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cyclopean — Submissions Register</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Courier+Prime:wght@400;700&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#d8d3c4;
+  --paper-2:#cfc9b8;
+  --stock:#c9c3b1;
+  --ink:#191d18;
+  --ink-2:#4a4f47;
+  --ink-3:#7b7f74;
+  --concrete:#3c4a3f;
+  --concrete-2:#2c372f;
+  --concrete-3:#212a23;
+  --stamp:#8d3527;
+  --stamp-soft:rgba(141,53,39,.12);
+  --brass:#7a6a2f;
+  --rule:#a9a291;
+  --rule-2:#bcb5a3;
+  --focus:#2f5d4a;
+  --disp:'Archivo Black',system-ui,sans-serif;
+  --form:'Courier Prime',ui-monospace,monospace;
+  --body:'Public Sans',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--body);
+  background:var(--paper);
+  color:var(--ink);
+  font-size:15px;
+  line-height:1.55;
+  min-height:100vh;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9;opacity:.35;
+  background-image:
+    repeating-linear-gradient(0deg,rgba(25,29,24,.035) 0 1px,transparent 1px 3px),
+    repeating-linear-gradient(90deg,rgba(25,29,24,.02) 0 1px,transparent 1px 4px);
+}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,textarea,select{font:inherit;color:inherit}
+
+/* ============ masthead ============ */
+.masthead{
+  background:var(--concrete);
+  color:var(--paper);
+  border-bottom:3px solid var(--concrete-3);
+  position:relative;z-index:10;
+}
+.mast-in{
+  max-width:1500px;margin:0 auto;padding:14px 22px 12px;
+  display:flex;align-items:flex-end;gap:26px;flex-wrap:wrap;
+}
+.mast-title{flex:1;min-width:250px}
+.mast-title h1{
+  font-family:var(--disp);font-size:clamp(19px,2.6vw,27px);
+  letter-spacing:.02em;text-transform:uppercase;line-height:1;
+  text-shadow:1.5px 1.5px 0 rgba(141,53,39,.55);
+}
+.mast-sub{
+  font-family:var(--form);font-size:11px;color:#a8b2a4;
+  margin-top:6px;letter-spacing:.04em;
+}
+.mast-form{
+  font-family:var(--form);font-size:11px;color:#9aa596;
+  text-align:right;line-height:1.7;
+}
+.mast-form b{color:var(--paper);font-weight:400}
+
+/* identity + sync controls */
+.mast-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.who{
+  display:flex;align-items:center;gap:0;
+  border:1px solid rgba(216,211,196,.35);background:rgba(0,0,0,.18);
+}
+.who label{
+  font-family:var(--form);font-size:10px;color:#9aa596;
+  padding:0 8px;letter-spacing:.06em;border-right:1px solid rgba(216,211,196,.22);
+}
+.who input{
+  background:none;border:0;color:var(--paper);font-family:var(--form);
+  font-size:12px;padding:7px 9px;width:150px;
+}
+.who input::placeholder{color:#7d8879}
+.who input:focus{outline:none;background:rgba(0,0,0,.25)}
+.mini-btn{
+  font-family:var(--form);font-size:10.5px;letter-spacing:.06em;
+  border:1px solid rgba(216,211,196,.35);background:rgba(0,0,0,.18);
+  color:#c5cdc0;padding:7px 11px;transition:background .12s,color .12s;
+}
+.mini-btn:hover{background:rgba(216,211,196,.14);color:var(--paper)}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--ink-3);display:inline-block;margin-right:6px;vertical-align:middle}
+.sync-dot.live{background:#7fbf6a;box-shadow:0 0 6px rgba(127,191,106,.8)}
+.sync-dot.err{background:#d0603f}
+
+/* ============ tabs ============ */
+.tabbar{
+  background:var(--concrete-3);
+  border-bottom:1px solid var(--rule);
+  position:relative;z-index:10;
+}
+.tabbar-in{
+  max-width:1500px;margin:0 auto;padding:0 22px;
+  display:flex;align-items:stretch;gap:2px;
+}
+.tab{
+  font-family:var(--form);font-size:12px;letter-spacing:.09em;
+  text-transform:uppercase;color:#8e9a8b;
+  padding:11px 20px 10px;border-bottom:3px solid transparent;
+  transition:color .12s,background .12s;
+}
+.tab:hover{color:var(--paper);background:rgba(255,255,255,.05)}
+.tab[aria-selected="true"]{
+  background:var(--paper);color:var(--ink);border-bottom-color:var(--stamp);
+}
+.tab .ct{font-size:10.5px;color:var(--ink-3);margin-left:7px}
+.tab[aria-selected="true"] .ct{color:var(--stamp)}
+
+/* ============ shell ============ */
+.shell{
+  max-width:1500px;margin:0 auto;padding:0 22px 90px;
+  display:grid;grid-template-columns:minmax(0,1fr) 430px;gap:0;
+  align-items:start;
+}
+@media(max-width:1080px){.shell{grid-template-columns:minmax(0,1fr)}}
+
+/* ============ filter strip ============ */
+.strip{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:13px 0 12px;border-bottom:1px solid var(--rule);
+}
+.search{
+  flex:1;min-width:180px;display:flex;align-items:center;
+  border:1px solid var(--rule);background:rgba(255,255,255,.32);
+}
+.search span{font-family:var(--form);font-size:10px;color:var(--ink-3);padding:0 9px;letter-spacing:.06em}
+.search input{background:none;border:0;padding:8px 10px 8px 0;width:100%;font-size:14px}
+.search input:focus{outline:none}
+.chipset{display:flex;gap:0;border:1px solid var(--rule)}
+.chip{
+  font-family:var(--form);font-size:10.5px;letter-spacing:.05em;
+  padding:7px 11px;color:var(--ink-2);background:rgba(255,255,255,.2);
+  border-right:1px solid var(--rule);transition:background .12s;
+}
+.chip:last-child{border-right:0}
+.chip:hover{background:rgba(255,255,255,.5)}
+.chip[aria-pressed="true"]{background:var(--concrete);color:var(--paper)}
+
+/* ============ tree ============ */
+.register{padding:18px 26px 0 0;min-width:0}
+@media(max-width:1080px){.register{padding-right:0}}
+
+.node{position:relative}
+.node-kids{position:relative;margin-left:19px;border-left:1px solid var(--rule-2)}
+.node-kids::before{content:none}
+
+.row{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:9px 10px 9px 8px;
+  border-bottom:1px solid rgba(169,162,145,.55);
+  position:relative;transition:background .1s;
+}
+.row:hover{background:rgba(255,255,255,.4)}
+.row.sel{background:rgba(255,255,255,.72);box-shadow:inset 3px 0 0 var(--stamp)}
+.node-kids > .node > .row{padding-left:16px}
+.node-kids > .node > .row::before{
+  content:'';position:absolute;left:0;top:20px;width:9px;height:1px;background:var(--rule-2);
+}
+.row.dim{opacity:.34}
+
+.twist{
+  width:17px;height:17px;flex:0 0 17px;margin-top:2px;
+  border:1px solid var(--rule);background:rgba(255,255,255,.5);
+  font-family:var(--form);font-size:11px;line-height:15px;text-align:center;
+  color:var(--ink-2);transition:background .12s;
+}
+.twist:hover{background:var(--concrete);color:var(--paper);border-color:var(--concrete)}
+.twist.leaf{visibility:hidden}
+
+.kind{
+  font-family:var(--form);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;
+  padding:2px 6px;margin-top:2px;white-space:nowrap;flex:0 0 auto;
+  border:1px solid currentColor;
+}
+.k-faction{color:#4a3d6b}
+.k-subfaction{color:#6b4a5f}
+.k-unit{color:#2f5d4a}
+.k-ability{color:#7a5a18}
+.k-wargear{color:#5a5240}
+.k-note{color:#6b6b6b}
+.k-mechanic{color:#8d3527}
+.k-rule{color:#3d5a6b}
+
+.rowmain{flex:1;min-width:0}
+.rowtitle{
+  font-weight:600;font-size:15px;line-height:1.35;
+  display:block;text-align:left;width:100%;
+}
+.rowtitle:hover{text-decoration:underline;text-underline-offset:2px}
+.rowmeta{
+  font-family:var(--form);font-size:10.5px;color:var(--ink-3);
+  margin-top:3px;display:flex;gap:12px;flex-wrap:wrap;
+}
+.rowmeta .ref{color:var(--ink-2)}
+.rowmeta .ann{color:var(--stamp)}
+
+.status{
+  font-family:var(--form);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 7px;margin-top:2px;white-space:nowrap;flex:0 0 auto;
+  border:1px solid;
+}
+.s-submitted{color:var(--ink-2);border-color:var(--rule);background:rgba(255,255,255,.4)}
+.s-review{color:#7a5a18;border-color:#b39a4f;background:rgba(179,154,79,.12)}
+.s-adopted{color:#2f5d4a;border-color:#2f5d4a;background:rgba(47,93,74,.1)}
+.s-withdrawn{color:var(--ink-3);border-color:var(--rule);background:transparent;text-decoration:line-through}
+
+.addkid{
+  font-family:var(--form);font-size:16px;line-height:1;
+  width:24px;height:24px;flex:0 0 24px;margin-top:0;
+  border:1px solid var(--rule);background:rgba(255,255,255,.45);color:var(--ink-2);
+  transition:all .12s;
+}
+.addkid:hover{background:var(--concrete);color:var(--paper);border-color:var(--concrete)}
+.addkid.none{visibility:hidden}
+.delkid{
+  font-family:var(--form);font-size:12px;line-height:1;
+  width:24px;height:24px;flex:0 0 24px;
+  border:1px solid var(--rule);background:rgba(255,255,255,.45);color:var(--ink-3);
+  transition:all .12s;
+}
+.delkid:hover{background:var(--stamp);color:var(--paper);border-color:var(--stamp)}
+
+/* big add button */
+.bigadd{
+  width:100%;margin:22px 0 0;padding:22px;
+  border:2px dashed var(--rule);background:rgba(255,255,255,.22);
+  display:flex;align-items:center;justify-content:center;gap:14px;
+  transition:background .14s,border-color .14s;
+}
+.bigadd:hover{background:rgba(255,255,255,.55);border-color:var(--concrete);border-style:solid}
+.bigadd .plus{
+  font-family:var(--disp);font-size:30px;line-height:.8;color:var(--stamp);
+}
+.bigadd .txt{font-family:var(--disp);font-size:15px;letter-spacing:.03em;text-transform:uppercase}
+.bigadd .hint{font-family:var(--form);font-size:11px;color:var(--ink-3);display:block;margin-top:4px;text-transform:none;letter-spacing:0;font-weight:400}
+
+.empty{
+  border:1px solid var(--rule);background:rgba(255,255,255,.3);
+  padding:34px 28px;margin-top:20px;text-align:center;
+}
+.empty h3{font-family:var(--disp);font-size:15px;text-transform:uppercase;letter-spacing:.02em}
+.empty p{color:var(--ink-2);font-size:14px;margin-top:8px;max-width:46ch;margin-inline:auto}
+
+/* ============ record panel ============ */
+.record{
+  position:sticky;top:0;align-self:start;
+  border-left:1px solid var(--rule);
+  background:var(--stock);
+  min-height:100vh;padding:18px 0 40px 22px;
+}
+@media(max-width:1080px){
+  .record{
+    position:fixed;inset:0;z-index:60;border-left:0;padding:0;
+    overflow-y:auto;display:none;
+  }
+  .record.open{display:block}
+  .record-inner{padding:16px}
+}
+.record-inner{padding-right:2px}
+.rec-close{display:none}
+@media(max-width:1080px){
+  .rec-close{
+    display:block;width:100%;background:var(--concrete);color:var(--paper);
+    font-family:var(--form);font-size:11px;letter-spacing:.1em;padding:12px;text-transform:uppercase;
+  }
+}
+.rec-blank{
+  font-family:var(--form);font-size:12px;color:var(--ink-3);
+  border:1px dashed var(--rule);padding:26px 20px;text-align:center;line-height:1.7;
+}
+.rec-hd{
+  border-bottom:2px solid var(--concrete);padding-bottom:9px;margin-bottom:14px;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+}
+.rec-ref{font-family:var(--form);font-size:11px;color:var(--ink-2);letter-spacing:.05em}
+.rec-kind{font-family:var(--disp);font-size:16px;text-transform:uppercase;letter-spacing:.02em;margin-top:3px}
+.rec-path{font-family:var(--form);font-size:10.5px;color:var(--ink-3);margin-top:5px;line-height:1.5}
+
+.field{margin-bottom:13px}
+.field > .flab{
+  font-family:var(--form);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-2);display:block;margin-bottom:4px;
+}
+.field input[type=text],.field textarea,.field select{
+  width:100%;background:rgba(255,255,255,.55);border:1px solid var(--rule);
+  padding:8px 10px;font-size:14.5px;line-height:1.5;
+}
+.field input[type=text]:focus,.field textarea:focus,.field select:focus{
+  outline:none;border-color:var(--focus);background:#fff;
+  box-shadow:inset 0 0 0 1px var(--focus);
+}
+.field textarea{resize:vertical;min-height:110px;font-family:var(--body)}
+.field .title-in{font-family:var(--disp);font-size:17px;padding:10px;letter-spacing:.01em}
+
+.statusrow{display:flex;gap:0;border:1px solid var(--rule)}
+.statusrow button{
+  flex:1;font-family:var(--form);font-size:10px;letter-spacing:.05em;text-transform:uppercase;
+  padding:8px 4px;border-right:1px solid var(--rule);background:rgba(255,255,255,.45);color:var(--ink-2);
+}
+.statusrow button:last-child{border-right:0}
+.statusrow button:hover{background:rgba(255,255,255,.8)}
+.statusrow button[aria-pressed="true"]{background:var(--concrete);color:var(--paper)}
+
+.rec-foot{
+  font-family:var(--form);font-size:10.5px;color:var(--ink-3);
+  border-top:1px solid var(--rule);padding-top:9px;margin-top:4px;line-height:1.7;
+}
+.rec-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.act{
+  font-family:var(--form);font-size:10.5px;letter-spacing:.05em;
+  border:1px solid var(--rule);background:rgba(255,255,255,.45);
+  padding:7px 11px;color:var(--ink-2);transition:all .12s;
+}
+.act:hover{background:var(--concrete);color:var(--paper);border-color:var(--concrete)}
+.act.danger:hover{background:var(--stamp);border-color:var(--stamp)}
+
+/* annotations */
+.ann-hd{
+  font-family:var(--disp);font-size:12px;text-transform:uppercase;letter-spacing:.03em;
+  border-bottom:2px solid var(--concrete);padding-bottom:6px;margin:22px 0 12px;
+  display:flex;justify-content:space-between;align-items:baseline;
+}
+.ann-hd span{font-family:var(--form);font-size:10.5px;color:var(--ink-3);letter-spacing:.05em}
+.ann{
+  border-left:3px solid var(--rule);padding:2px 0 2px 11px;margin-bottom:13px;
+}
+.ann.done{opacity:.5;border-left-color:#2f5d4a}
+.ann-meta{
+  font-family:var(--form);font-size:10.5px;color:var(--ink-2);
+  display:flex;gap:9px;align-items:baseline;flex-wrap:wrap;margin-bottom:3px;
+}
+.ann-meta b{font-weight:700;color:var(--ink)}
+.ann-body{font-size:14px;white-space:pre-wrap;word-wrap:break-word}
+.ann-ops{display:flex;gap:9px;margin-top:4px}
+.ann-ops button{
+  font-family:var(--form);font-size:10px;color:var(--ink-3);
+  text-decoration:underline;text-underline-offset:2px;
+}
+.ann-ops button:hover{color:var(--stamp)}
+.ann-new textarea{
+  width:100%;min-height:66px;background:rgba(255,255,255,.55);
+  border:1px solid var(--rule);padding:9px;font-family:var(--body);font-size:14px;resize:vertical;
+}
+.ann-new textarea:focus{outline:none;border-color:var(--focus);background:#fff;box-shadow:inset 0 0 0 1px var(--focus)}
+.ann-new .go{
+  margin-top:7px;font-family:var(--form);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  background:var(--concrete);color:var(--paper);padding:9px 15px;transition:background .12s;
+}
+.ann-new .go:hover{background:var(--concrete-3)}
+
+/* ============ modal ============ */
+.veil{
+  position:fixed;inset:0;background:rgba(33,42,35,.72);z-index:100;
+  display:flex;align-items:center;justify-content:center;padding:20px;
+}
+.modal{
+  background:var(--paper);border:1px solid var(--concrete-3);
+  box-shadow:6px 6px 0 rgba(33,42,35,.35);
+  width:min(560px,100%);max-height:88vh;overflow-y:auto;
+}
+.modal-hd{
+  background:var(--concrete);color:var(--paper);padding:12px 18px;
+  font-family:var(--disp);font-size:13px;text-transform:uppercase;letter-spacing:.04em;
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+}
+.modal-hd button{font-family:var(--form);font-size:16px;color:#b9c2b4;line-height:1}
+.modal-bd{padding:18px}
+.modal-bd p{font-size:14px;color:var(--ink-2);margin-bottom:13px}
+.modal-bd code{font-family:var(--form);font-size:12.5px;background:rgba(255,255,255,.5);padding:1px 4px;border:1px solid var(--rule)}
+.modal-bd textarea{
+  width:100%;min-height:150px;font-family:var(--form);font-size:12px;
+  background:rgba(255,255,255,.55);border:1px solid var(--rule);padding:10px;resize:vertical;
+}
+.modal-bd textarea:focus{outline:none;border-color:var(--focus);background:#fff}
+.modal-bd ol{margin:0 0 14px 18px;font-size:14px;color:var(--ink-2)}
+.modal-bd ol li{margin-bottom:6px}
+.modal-ft{display:flex;gap:9px;flex-wrap:wrap;padding:0 18px 18px}
+.solid{
+  font-family:var(--form);font-size:11px;letter-spacing:.07em;text-transform:uppercase;
+  background:var(--concrete);color:var(--paper);padding:10px 16px;transition:background .12s;
+}
+.solid:hover{background:var(--concrete-3)}
+.solid.red{background:var(--stamp)}
+.solid.red:hover{background:#6f2a1f}
+.ghost{
+  font-family:var(--form);font-size:11px;letter-spacing:.07em;text-transform:uppercase;
+  border:1px solid var(--rule);padding:10px 16px;color:var(--ink-2);
+}
+.ghost:hover{background:rgba(255,255,255,.6)}
+
+.kindpick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.kindpick button{
+  border:1px solid var(--rule);background:rgba(255,255,255,.4);padding:11px 12px;text-align:left;
+}
+.kindpick button:hover{background:rgba(255,255,255,.8);border-color:var(--concrete)}
+.kindpick b{font-family:var(--disp);font-size:12px;text-transform:uppercase;display:block;letter-spacing:.02em}
+.kindpick small{font-family:var(--body);font-size:12px;color:var(--ink-3);display:block;margin-top:2px;line-height:1.4}
+
+/* import staging */
+.maprow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.maprow select,.bulkrow select{
+  width:100%;background:rgba(255,255,255,.55);border:1px solid var(--rule);padding:7px 9px;font-size:13.5px;
+}
+.maprow select:focus,.bulkrow select:focus{outline:none;border-color:var(--focus);background:#fff}
+.optrow{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.optrow label{display:flex;align-items:center;gap:7px;font-size:13.5px;color:var(--ink-2)}
+.optrow input[type=checkbox],.stage input[type=checkbox]{width:15px;height:15px;accent-color:var(--concrete)}
+.bulkrow{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.bulkrow span{font-family:var(--form);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);white-space:nowrap}
+.stage{max-height:44vh;overflow:auto;border:1px solid var(--rule);background:rgba(255,255,255,.35)}
+.stage table{width:100%;border-collapse:collapse;font-size:13px}
+.stage th{
+  font-family:var(--form);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;
+  text-align:left;color:var(--ink-2);padding:7px 8px;border-bottom:1px solid var(--rule);
+  position:sticky;top:0;background:var(--paper-2);z-index:2;
+}
+.stage td{padding:6px 8px;border-bottom:1px solid rgba(169,162,145,.45);vertical-align:top}
+.stage tr:last-child td{border-bottom:0}
+.stage select{width:100%;background:rgba(255,255,255,.7);border:1px solid var(--rule);padding:4px 6px;font-size:12.5px}
+.stage input[type=text]{
+  width:100%;background:rgba(255,255,255,.7);border:1px solid var(--rule);
+  padding:4px 6px;font-size:12.5px;font-family:var(--body);
+}
+.stage input[type=text]:focus,.stage select:focus{outline:none;border-color:var(--focus);background:#fff}
+.stage .nm{font-weight:600;line-height:1.3}
+.stage .sub{font-family:var(--form);font-size:10.5px;color:var(--ink-3);margin-top:2px}
+.stage tr.off{opacity:.4}
+.previewbox{
+  font-family:var(--form);font-size:11.5px;background:rgba(255,255,255,.5);
+  border:1px solid var(--rule);padding:9px;max-height:120px;overflow:auto;
+  white-space:pre-wrap;color:var(--ink-2);margin-bottom:14px;line-height:1.5;
+}
+
+/* toast */
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%);
+  background:var(--concrete-3);color:var(--paper);z-index:200;
+  font-family:var(--form);font-size:12px;padding:11px 20px;letter-spacing:.04em;
+  border:1px solid var(--brass);
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="mast-in">
+    <div class="mast-title">
+      <h1>Cyclopean Submissions Register</h1>
+      <p class="mast-sub">Factions, units, abilities, and mechanics under review</p>
+    </div>
+    <div class="mast-tools">
+      <div class="who">
+        <label for="whoName">Filed by</label>
+        <input id="whoName" type="text" placeholder="Your name" autocomplete="off">
+      </div>
+      <button class="mini-btn" id="syncBtn"><span class="sync-dot" id="syncDot"></span><span id="syncLabel">Connecting…</span></button>
+      <button class="mini-btn" id="dataBtn">Import / export</button>
+    </div>
+    <div class="mast-form">
+      <div>Form <b>CYC-SR-1</b></div>
+      <div id="mastCount">0 records</div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabbar">
+  <div class="tabbar-in" role="tablist">
+    <button class="tab" role="tab" data-board="register" aria-selected="true">Register<span class="ct" id="ctRegister">0</span></button>
+    <button class="tab" role="tab" data-board="mechanics" aria-selected="false">Mechanics<span class="ct" id="ctMechanics">0</span></button>
+  </div>
+</nav>
+
+<div class="shell">
+  <main class="register">
+    <div class="strip">
+      <div class="search">
+        <span>Find</span>
+        <input id="q" type="search" placeholder="Search titles, notes, and annotations" autocomplete="off">
+      </div>
+      <div class="chipset" id="statusFilter">
+        <button class="chip" data-st="all" aria-pressed="true">All</button>
+        <button class="chip" data-st="submitted" aria-pressed="false">Submitted</button>
+        <button class="chip" data-st="review" aria-pressed="false">In review</button>
+        <button class="chip" data-st="adopted" aria-pressed="false">Adopted</button>
+        <button class="chip" data-st="withdrawn" aria-pressed="false">Withdrawn</button>
+      </div>
+      <div class="chipset">
+        <button class="chip" id="expandAll">Open all</button>
+        <button class="chip" id="collapseAll">Close all</button>
+      </div>
+    </div>
+    <div id="tree"></div>
+    <button class="bigadd" id="bigAdd">
+      <span class="plus">+</span>
+      <span class="txt"><span id="bigAddLabel">Add a faction</span><span class="hint" id="bigAddHint">Starts a new branch. Units and abilities file underneath it.</span></span>
+    </button>
+  </main>
+
+  <aside class="record" id="record">
+    <button class="rec-close" id="recClose">Back to the register</button>
+    <div class="record-inner" id="recordInner"></div>
+  </aside>
+</div>
+
+<div id="modalHost"></div>
+<div id="toastHost"></div>
+
+<script>
+/* ==========================================================================
+   CYCLOPEAN SUBMISSIONS REGISTER
+   Single-file collaborative workboard.
+   Storage: localStorage by default; Firebase Realtime Database when configured.
+   ========================================================================== */
+
+/* ---------- taxonomy ---------- */
+const KINDS = {
+  faction:  {label:'Faction',  code:'F', board:'register',  children:['subfaction','unit','wargear','note'],
+             blurb:'A power, cult, or army in the setting.'},
+  subfaction:{label:'Sub-faction', code:'S', board:null,    children:['subfaction','unit','wargear','note'],
+             blurb:'A branch inside a faction — Tidewatch, Deep Ones, Abyssal constructs.'},
+  unit:     {label:'Unit',     code:'U', board:null,        children:['ability','wargear','note'],
+             blurb:'A datasheet entry that fields on the table.'},
+  ability:  {label:'Ability',  code:'A', board:null,        children:['note'],
+             blurb:'An activated or passive special rule.'},
+  wargear:  {label:'Wargear',  code:'W', board:null,        children:['note'],
+             blurb:'A weapon profile or piece of equipment.'},
+  note:     {label:'Note',     code:'N', board:null,        children:[],
+             blurb:'Loose thinking attached to the parent.'},
+  mechanic: {label:'Mechanic', code:'M', board:'mechanics', children:['rule','note'],
+             blurb:'A core system: activation, wounds, elements.'},
+  rule:     {label:'Sub-rule', code:'R', board:null,        children:['rule','note'],
+             blurb:'A clause or edge case inside the mechanic.'}
+};
+const STATUSES = {
+  submitted:{label:'Submitted', cls:'s-submitted'},
+  review:   {label:'In review', cls:'s-review'},
+  adopted:  {label:'Adopted',   cls:'s-adopted'},
+  withdrawn:{label:'Withdrawn', cls:'s-withdrawn'}
+};
+const ROOT_KIND = {register:'faction', mechanics:'mechanic'};
+
+/* ---------- state ---------- */
+const state = {
+  board:'register',
+  nodes:{},          // id -> node
+  anns:{},           // id -> annotation
+  selected:null,
+  collapsed:new Set(JSON.parse(localStorage.getItem('cyc.collapsed')||'[]')),
+  query:'',
+  statusFilter:'all',
+  who:localStorage.getItem('cyc.who')||'',
+  backend:'local',
+  fb:null
+};
+
+const uid = p => p+'-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7);
+const now = () => Date.now();
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function when(ts){
+  if(!ts) return '—';
+  const d=new Date(ts), diff=(now()-ts)/1000;
+  if(diff<60) return 'just now';
+  if(diff<3600) return Math.floor(diff/60)+' min ago';
+  if(diff<86400) return Math.floor(diff/3600)+' hr ago';
+  if(diff<604800) return Math.floor(diff/86400)+' d ago';
+  return d.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
+}
+
+/* ==========================================================================
+   STORAGE LAYER
+   ========================================================================== */
+const LOCAL_KEY = 'cyc.board.v1';
+
+function loadLocal(){
+  try{
+    const raw = JSON.parse(localStorage.getItem(LOCAL_KEY)||'null');
+    if(raw && raw.nodes){ state.nodes = raw.nodes; state.anns = raw.anns||{}; return true; }
+  }catch(e){}
+  return false;
+}
+function saveLocal(){
+  if(state.backend!=='local') return;
+  try{ localStorage.setItem(LOCAL_KEY, JSON.stringify({nodes:state.nodes, anns:state.anns})); }
+  catch(e){ toast('Local storage is full. Export a backup.'); }
+}
+
+/* --- Firebase --- */
+
+/* Shipped config. Contributors open the link and are connected — no paste step.
+   A web config is not a secret; the database rules are what protect the data. */
+const BUILT_IN_CONFIG = {
+  apiKey: "AIzaSyCxYRKGkzGZeiQHjyqq43wLrmBaD_GTHHU",
+  authDomain: "cyclopean-register.firebaseapp.com",
+  databaseURL: "https://cyclopean-register-default-rtdb.firebaseio.com",
+  projectId: "cyclopean-register",
+  storageBucket: "cyclopean-register.firebasestorage.app",
+  messagingSenderId: "942586848147",
+  appId: "1:942586848147:web:234515acac38a1ef633e66"
+};
+const BUILT_IN_BOARD = 'cyclopean';
+
+let fbRefs = null;
+async function connectFirebase(cfg, boardId, quiet){
+  try{
+    const appMod = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
+    const dbMod  = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js');
+    const app = appMod.initializeApp(cfg, 'cyclopean-'+Math.random().toString(36).slice(2,6));
+
+    /* Sign in anonymously if the project allows it. Harmless while the rules are
+       open; the moment Anonymous auth is enabled and the rules require auth,
+       this is what keeps the board working. */
+    try{
+      const authMod = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
+      await authMod.signInAnonymously(authMod.getAuth(app));
+    }catch(e){ /* anonymous auth not enabled — carry on with open rules */ }
+
+    const db  = dbMod.getDatabase(app);
+    const base = 'boards/'+(boardId||'cyclopean');
+    fbRefs = {
+      db, mod:dbMod,
+      nodes: dbMod.ref(db, base+'/nodes'),
+      anns:  dbMod.ref(db, base+'/annotations'),
+      base
+    };
+    state.backend = 'firebase';
+    setSync('live','Syncing live');
+
+    dbMod.onValue(fbRefs.nodes, snap => {
+      state.nodes = snap.val() || {};
+      render(true);
+    }, err => { setSync('err','Sync error'); console.error(err); });
+
+    dbMod.onValue(fbRefs.anns, snap => {
+      state.anns = snap.val() || {};
+      render(true);
+    });
+    if(!quiet) toast('Connected. Everyone with this link now sees the same board.');
+    return true;
+  }catch(e){
+    console.error(e);
+    setSync('err','Could not connect');
+    toast('Could not connect: '+(e.message||'check the config'));
+    state.backend='local';
+    return false;
+  }
+}
+
+function putNode(n){
+  state.nodes[n.id] = n;
+  if(state.backend==='firebase'){ fbRefs.mod.set(fbRefs.mod.ref(fbRefs.db, fbRefs.base+'/nodes/'+n.id), n); }
+  else saveLocal();
+}
+function dropNode(id){
+  delete state.nodes[id];
+  if(state.backend==='firebase'){ fbRefs.mod.remove(fbRefs.mod.ref(fbRefs.db, fbRefs.base+'/nodes/'+id)); }
+  else saveLocal();
+}
+function putAnn(a){
+  state.anns[a.id] = a;
+  if(state.backend==='firebase'){ fbRefs.mod.set(fbRefs.mod.ref(fbRefs.db, fbRefs.base+'/annotations/'+a.id), a); }
+  else saveLocal();
+}
+function dropAnn(id){
+  delete state.anns[id];
+  if(state.backend==='firebase'){ fbRefs.mod.remove(fbRefs.mod.ref(fbRefs.db, fbRefs.base+'/annotations/'+id)); }
+  else saveLocal();
+}
+
+function setSync(kind,label){
+  const dot=document.getElementById('syncDot');
+  dot.className='sync-dot'+(kind==='live'?' live':kind==='err'?' err':'');
+  document.getElementById('syncLabel').textContent=label;
+}
+
+/* ==========================================================================
+   NODE OPERATIONS
+   ========================================================================== */
+function childrenOf(pid){
+  return Object.values(state.nodes)
+    .filter(n=>n.parent===pid)
+    .sort((a,b)=>(a.order??0)-(b.order??0) || (a.created||0)-(b.created||0));
+}
+function rootsOf(board){
+  return Object.values(state.nodes)
+    .filter(n=>!n.parent && n.board===board)
+    .sort((a,b)=>(a.order??0)-(b.order??0) || (a.created||0)-(b.created||0));
+}
+function descendants(id, acc){
+  acc = acc||[];
+  childrenOf(id).forEach(c=>{ acc.push(c.id); descendants(c.id, acc); });
+  return acc;
+}
+function ancestry(id){
+  const path=[]; let n=state.nodes[id];
+  while(n && n.parent){ n=state.nodes[n.parent]; if(n) path.unshift(n); }
+  return path;
+}
+function annsFor(id){
+  return Object.values(state.anns).filter(a=>a.node===id)
+    .sort((a,b)=>(a.created||0)-(b.created||0));
+}
+function openAnnCount(id){ return annsFor(id).filter(a=>!a.done).length; }
+
+function createNode(kind, parentId){
+  const parent = parentId ? state.nodes[parentId] : null;
+  const board  = parent ? parent.board : (KINDS[kind].board || state.board);
+  const sibs   = parentId ? childrenOf(parentId) : rootsOf(board);
+  const n = {
+    id: uid(KINDS[kind].code.toLowerCase()),
+    parent: parentId || null,
+    board, kind,
+    title: '',
+    body: '',
+    status: 'submitted',
+    tags: '',
+    author: state.who || 'Unsigned',
+    created: now(),
+    updated: now(),
+    updatedBy: state.who || 'Unsigned',
+    order: sibs.length ? (sibs[sibs.length-1].order||0)+1 : 0
+  };
+  putNode(n);
+  if(parentId) state.collapsed.delete(parentId);
+  state.selected = n.id;
+  persistCollapsed();
+  render();
+  setTimeout(()=>{
+    const t=document.querySelector('#recordInner .title-in');
+    if(t){ t.focus(); if(window.innerWidth<=1080) document.getElementById('record').classList.add('open'); }
+  },30);
+}
+
+function patchNode(id, patch){
+  const n = state.nodes[id]; if(!n) return;
+  Object.assign(n, patch, {updated:now(), updatedBy: state.who||'Unsigned'});
+  putNode(n);
+}
+
+function deleteNode(id){
+  const kids = descendants(id);
+  const all = [id, ...kids];
+  all.forEach(nid=>{
+    annsFor(nid).forEach(a=>dropAnn(a.id));
+    dropNode(nid);
+  });
+  if(state.selected && all.includes(state.selected)) state.selected=null;
+  render();
+  toast(kids.length ? 'Record and '+kids.length+' branch entries removed.' : 'Record removed.');
+}
+
+function moveNode(id, dir){
+  const n = state.nodes[id]; if(!n) return;
+  const sibs = n.parent ? childrenOf(n.parent) : rootsOf(n.board);
+  const i = sibs.findIndex(s=>s.id===id);
+  const j = i+dir;
+  if(j<0||j>=sibs.length) return;
+  const a=sibs[i], b=sibs[j];
+  const ao=a.order??i, bo=b.order??j;
+  a.order=bo; b.order=ao;
+  putNode(a); putNode(b);
+  render();
+}
+
+/* file reference: CYC-F-004, stable by creation order within kind */
+function refOf(n){
+  const same = Object.values(state.nodes).filter(x=>x.kind===n.kind)
+    .sort((a,b)=>(a.created||0)-(b.created||0));
+  const i = same.findIndex(x=>x.id===n.id);
+  return 'CYC-'+KINDS[n.kind].code+'-'+String(i+1).padStart(3,'0');
+}
+
+/* ==========================================================================
+   SEARCH / FILTER
+   ========================================================================== */
+function matches(n){
+  const q = state.query.trim().toLowerCase();
+  const stOk = state.statusFilter==='all' || n.status===state.statusFilter;
+  if(!q) return stOk;
+  const hay = [n.title, n.body, n.tags, n.author,
+    ...annsFor(n.id).map(a=>a.text+' '+a.author)].join(' ').toLowerCase();
+  return stOk && hay.includes(q);
+}
+/* a node shows if it matches, or any descendant matches */
+function visible(n){
+  if(matches(n)) return true;
+  return descendants(n.id).some(id=>state.nodes[id] && matches(state.nodes[id]));
+}
+
+/* ==========================================================================
+   RENDER
+   ========================================================================== */
+function persistCollapsed(){
+  localStorage.setItem('cyc.collapsed', JSON.stringify([...state.collapsed]));
+}
+
+function render(fromRemote){
+  renderTree();
+  const inner = document.getElementById('recordInner');
+  const typing = inner.contains(document.activeElement);
+  if(!(fromRemote && typing)) renderRecord();
+  renderCounts();
+}
+
+function renderCounts(){
+  const total = Object.keys(state.nodes).length;
+  document.getElementById('mastCount').textContent = total+(total===1?' record':' records');
+  document.getElementById('ctRegister').textContent =
+    Object.values(state.nodes).filter(n=>n.board==='register').length;
+  document.getElementById('ctMechanics').textContent =
+    Object.values(state.nodes).filter(n=>n.board==='mechanics').length;
+  const rk = ROOT_KIND[state.board];
+  document.getElementById('bigAddLabel').textContent = 'Add a '+KINDS[rk].label.toLowerCase();
+  document.getElementById('bigAddHint').textContent = state.board==='register'
+    ? 'Starts a new branch. Units and abilities file underneath it.'
+    : 'Starts a new system. Sub-rules and edge cases file underneath it.';
+}
+
+function nodeRow(n, depth){
+  const kids = childrenOf(n.id).filter(visible);
+  const isOpen = !state.collapsed.has(n.id);
+  const ann = annsFor(n.id), openA = ann.filter(a=>!a.done).length;
+  const allowed = KINDS[n.kind].children;
+  const dim = state.query.trim() && !matches(n);
+
+  const el = document.createElement('div');
+  el.className = 'node';
+
+  const row = document.createElement('div');
+  row.className = 'row'+(state.selected===n.id?' sel':'')+(dim?' dim':'');
+
+  const twist = document.createElement('button');
+  twist.className = 'twist'+(kids.length?'':' leaf');
+  twist.textContent = isOpen?'–':'+';
+  twist.setAttribute('aria-label', isOpen?'Collapse branch':'Expand branch');
+  twist.onclick = e=>{ e.stopPropagation();
+    if(state.collapsed.has(n.id)) state.collapsed.delete(n.id); else state.collapsed.add(n.id);
+    persistCollapsed(); renderTree();
+  };
+
+  const kind = document.createElement('span');
+  kind.className = 'kind k-'+n.kind;
+  kind.textContent = KINDS[n.kind].label;
+
+  const main = document.createElement('div');
+  main.className = 'rowmain';
+  const title = document.createElement('button');
+  title.className = 'rowtitle';
+  title.textContent = n.title || '(untitled '+KINDS[n.kind].label.toLowerCase()+')';
+  if(!n.title) title.style.color='var(--ink-3)';
+  title.onclick = ()=>{ select(n.id); };
+  const meta = document.createElement('div');
+  meta.className = 'rowmeta';
+  meta.innerHTML =
+    '<span class="ref">'+esc(refOf(n))+'</span>'+
+    '<span>'+esc(n.author||'Unsigned')+'</span>'+
+    '<span>'+esc(when(n.updated))+'</span>'+
+    (n.tags?'<span>'+esc(n.tags)+'</span>':'')+
+    (openA?'<span class="ann">'+openA+' open note'+(openA===1?'':'s')+'</span>':
+     ann.length?'<span>'+ann.length+' note'+(ann.length===1?'':'s')+'</span>':'');
+  main.append(title, meta);
+
+  const st = document.createElement('span');
+  st.className = 'status '+STATUSES[n.status||'submitted'].cls;
+  st.textContent = STATUSES[n.status||'submitted'].label;
+
+  const add = document.createElement('button');
+  add.className = 'addkid'+(allowed.length?'':' none');
+  add.textContent = '+';
+  add.title = 'Add underneath '+(n.title||'this record');
+  add.setAttribute('aria-label','Add a record underneath '+(n.title||'this record'));
+  add.onclick = e=>{ e.stopPropagation(); askKind(n.id); };
+
+  const del = document.createElement('button');
+  del.className = 'delkid';
+  del.textContent = '✕';
+  del.title = 'Delete '+(n.title||'this record');
+  del.setAttribute('aria-label','Delete '+(n.title||'this record'));
+  del.onclick = e=>{ e.stopPropagation(); confirmDelete(n.id); };
+
+  row.append(twist, kind, main, st, add, del);
+  el.appendChild(row);
+
+  if(kids.length && isOpen){
+    const box = document.createElement('div');
+    box.className = 'node-kids';
+    kids.forEach(c=>box.appendChild(nodeRow(c, depth+1)));
+    el.appendChild(box);
+  }
+  return el;
+}
+
+function renderTree(){
+  const host = document.getElementById('tree');
+  host.innerHTML = '';
+  const roots = rootsOf(state.board).filter(visible);
+
+  if(!roots.length){
+    const e = document.createElement('div');
+    e.className = 'empty';
+    const anyOnBoard = rootsOf(state.board).length;
+    if(anyOnBoard){
+      e.innerHTML = '<h3>Nothing matches</h3><p>No record on this board matches the search or the status filter. Clear them to see everything again.</p>';
+    } else if(state.board==='register'){
+      e.innerHTML = '<h3>The register is empty</h3><p>Add a faction to start the first branch. Units file underneath the faction, abilities underneath the unit.</p>';
+    } else {
+      e.innerHTML = '<h3>No mechanics on file</h3><p>Add a mechanic for anything system-level — activation, the wound track, the element economy — and break it into sub-rules underneath.</p>';
+    }
+    host.appendChild(e);
+    return;
+  }
+  roots.forEach(r=>host.appendChild(nodeRow(r,0)));
+}
+
+function select(id){
+  state.selected = id;
+  renderTree(); renderRecord();
+  if(window.innerWidth<=1080) document.getElementById('record').classList.add('open');
+}
+
+function renderRecord(){
+  const host = document.getElementById('recordInner');
+  const n = state.selected ? state.nodes[state.selected] : null;
+  if(!n){
+    host.innerHTML = '<div class="rec-blank">No record selected.<br>Pick an entry from the register to read it,<br>edit it, or leave an annotation.</div>';
+    return;
+  }
+  const path = ancestry(n.id);
+  const ann = annsFor(n.id);
+  const allowed = KINDS[n.kind].children;
+
+  host.innerHTML = `
+    <div class="rec-hd">
+      <div>
+        <div class="rec-ref">${esc(refOf(n))}</div>
+        <div class="rec-kind">${esc(KINDS[n.kind].label)}</div>
+        ${path.length?'<div class="rec-path">Filed under '+path.map(p=>esc(p.title||'untitled')).join(' &rsaquo; ')+'</div>':''}
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="flab" for="fTitle">Title</label>
+      <input class="title-in" id="fTitle" type="text" value="${esc(n.title)}" placeholder="Name this ${esc(KINDS[n.kind].label.toLowerCase())}">
+    </div>
+
+    <div class="field">
+      <label class="flab" for="fBody">Description</label>
+      <textarea id="fBody" placeholder="${esc(bodyHint(n.kind))}">${esc(n.body)}</textarea>
+    </div>
+
+    <div class="field">
+      <span class="flab">Status</span>
+      <div class="statusrow" id="fStatus">
+        ${Object.entries(STATUSES).map(([k,v])=>
+          `<button data-st="${k}" aria-pressed="${n.status===k}">${v.label}</button>`).join('')}
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="flab" for="fTags">Tags</label>
+      <input id="fTags" type="text" value="${esc(n.tags||'')}" placeholder="e.g. tidewatch, playtest, needs costing">
+    </div>
+
+    <div class="rec-foot">
+      Filed by ${esc(n.author||'Unsigned')} · ${esc(when(n.created))}<br>
+      Last change ${esc(when(n.updated))} by ${esc(n.updatedBy||'Unsigned')}
+    </div>
+
+    <div class="rec-actions">
+      ${allowed.length?'<button class="act" id="aAdd">+ Add underneath</button>':''}
+      <button class="act" id="aUp">Move up</button>
+      <button class="act" id="aDown">Move down</button>
+      <button class="act" id="aMove">Move to…</button>
+      <button class="act" id="aCopy">Copy as text</button>
+      <button class="act danger" id="aDel">Delete</button>
+    </div>
+
+    <div class="ann-hd">Annotations <span>${ann.length} total · ${ann.filter(a=>!a.done).length} open</span></div>
+    <div id="annList">${ann.map(annHTML).join('') || '<div class="rec-blank" style="padding:16px">No annotations yet. Leave the first one.</div>'}</div>
+
+    <div class="ann-new">
+      <textarea id="annText" placeholder="Question it, argue with it, or add what it needs"></textarea>
+      <button class="go" id="annGo">Add annotation</button>
+    </div>
+  `;
+
+  /* wiring */
+  const t = host.querySelector('#fTitle');
+  const b = host.querySelector('#fBody');
+  const g = host.querySelector('#fTags');
+  let timer;
+  const push = () => { clearTimeout(timer); timer = setTimeout(()=>{
+    patchNode(n.id,{title:t.value, body:b.value, tags:g.value});
+    renderTree(); renderCounts();
+  }, 500); };
+  [t,b,g].forEach(el=>el.addEventListener('input',push));
+  [t,b,g].forEach(el=>el.addEventListener('blur',()=>{clearTimeout(timer);
+    patchNode(n.id,{title:t.value, body:b.value, tags:g.value}); renderTree(); renderCounts();}));
+
+  host.querySelectorAll('#fStatus button').forEach(btn=>{
+    btn.onclick = ()=>{ patchNode(n.id,{status:btn.dataset.st}); render(); };
+  });
+
+  const addBtn = host.querySelector('#aAdd');
+  if(addBtn) addBtn.onclick = ()=>askKind(n.id);
+  host.querySelector('#aUp').onclick   = ()=>moveNode(n.id,-1);
+  host.querySelector('#aDown').onclick = ()=>moveNode(n.id, 1);
+  host.querySelector('#aMove').onclick = ()=>reparentDialog(n.id);
+  host.querySelector('#aCopy').onclick = ()=>copyBranch(n.id);
+  host.querySelector('#aDel').onclick  = ()=>confirmDelete(n.id);
+
+  const goA = ()=>{
+    const box = host.querySelector('#annText');
+    const txt = box.value.trim();
+    if(!txt) return;
+    if(!state.who){ needName(); return; }
+    putAnn({id:uid('a'), node:n.id, author:state.who, text:txt, created:now(), done:false});
+    box.value='';
+    render();
+  };
+  host.querySelector('#annGo').onclick = goA;
+  host.querySelector('#annText').addEventListener('keydown', e=>{
+    if((e.metaKey||e.ctrlKey) && e.key==='Enter') goA();
+  });
+
+  host.querySelectorAll('[data-ann-done]').forEach(btn=>{
+    btn.onclick = ()=>{ const a=state.anns[btn.dataset.annDone]; if(!a) return;
+      a.done=!a.done; putAnn(a); render(); };
+  });
+  host.querySelectorAll('[data-ann-del]').forEach(btn=>{
+    btn.onclick = ()=>{ dropAnn(btn.dataset.annDel); render(); };
+  });
+}
+
+function annHTML(a){
+  return `<div class="ann${a.done?' done':''}">
+    <div class="ann-meta"><b>${esc(a.author||'Unsigned')}</b><span>${esc(when(a.created))}</span>${a.done?'<span>resolved</span>':''}</div>
+    <div class="ann-body">${esc(a.text)}</div>
+    <div class="ann-ops">
+      <button data-ann-done="${a.id}">${a.done?'Reopen':'Mark resolved'}</button>
+      <button data-ann-del="${a.id}">Delete</button>
+    </div>
+  </div>`;
+}
+
+function bodyHint(kind){
+  return ({
+    faction:'Who they are, what they want, how they fight, and what makes them different on the table.',
+    unit:'Role, rough stat line, what it is for, and how it plays with the rest of the army.',
+    ability:'Cost, trigger, and effect. Say plainly what a player does when they use it.',
+    wargear:'Profile, range, and what it is meant to threaten.',
+    note:'Whatever is worth writing down.',
+    mechanic:'What the system does, why it exists, and what it replaces.',
+    rule:'The specific clause, and the case it is there to settle.'
+  })[kind] || '';
+}
+
+/* ==========================================================================
+   MODALS
+   ========================================================================== */
+function modal(title, bodyHTML, footHTML){
+  const host = document.getElementById('modalHost');
+  host.innerHTML = `<div class="veil" id="veil"><div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-hd"><span>${esc(title)}</span><button id="mClose" aria-label="Close">✕</button></div>
+    <div class="modal-bd">${bodyHTML}</div>
+    ${footHTML?'<div class="modal-ft">'+footHTML+'</div>':''}
+  </div></div>`;
+  const close = ()=>{ host.innerHTML=''; document.removeEventListener('keydown', onEsc); };
+  const onEsc = e => { if(e.key==='Escape') close(); };
+  document.addEventListener('keydown', onEsc);
+  host.querySelector('#mClose').onclick = close;
+  host.querySelector('#veil').onclick = e => { if(e.target.id==='veil') close(); };
+  return {host, close};
+}
+
+function askKind(parentId){
+  const parent = parentId ? state.nodes[parentId] : null;
+  const allowed = parent ? KINDS[parent.kind].children : [ROOT_KIND[state.board]];
+  if(allowed.length===1){ createNode(allowed[0], parentId); return; }
+  const m = modal(
+    parent ? 'Add underneath '+(parent.title||'this record') : 'Add a record',
+    '<div class="kindpick">'+allowed.map(k=>
+      `<button data-k="${k}"><b>${KINDS[k].label}</b><small>${esc(KINDS[k].blurb)}</small></button>`).join('')+'</div>'
+  );
+  m.host.querySelectorAll('[data-k]').forEach(btn=>{
+    btn.onclick = ()=>{ m.close(); createNode(btn.dataset.k, parentId); };
+  });
+}
+
+function confirmDelete(id){
+  const n = state.nodes[id];
+  const kids = descendants(id).length;
+  const m = modal('Delete record',
+    `<p>Delete <b>${esc(n.title||'this untitled record')}</b>${kids?' and the '+kids+' record'+(kids===1?'':'s')+' filed underneath it':''}? Annotations go with it. This cannot be undone.</p>`,
+    '<button class="solid red" id="yes">Delete</button><button class="ghost" id="no">Keep it</button>');
+  m.host.querySelector('#yes').onclick = ()=>{ m.close(); deleteNode(id); };
+  m.host.querySelector('#no').onclick  = m.close;
+}
+
+function needName(){
+  const m = modal('Sign your name',
+    '<p>Annotations are attributed, so the register shows who raised what. Enter the name you want on your entries.</p>'+
+    '<div class="field"><input class="title-in" id="nameIn" type="text" placeholder="Your name"></div>',
+    '<button class="solid" id="ok">Save</button>');
+  const inp = m.host.querySelector('#nameIn'); inp.focus();
+  const save = ()=>{ const v=inp.value.trim(); if(!v) return;
+    setWho(v); m.close(); toast('Signed in as '+v); };
+  m.host.querySelector('#ok').onclick = save;
+  inp.addEventListener('keydown', e=>{ if(e.key==='Enter') save(); });
+}
+
+function setWho(v){
+  state.who = v;
+  localStorage.setItem('cyc.who', v);
+  document.getElementById('whoName').value = v;
+}
+
+/* ---------- sync setup ---------- */
+function syncDialog(){
+  const saved = JSON.parse(localStorage.getItem('cyc.fb')||'null');
+  const live  = state.backend === 'firebase';
+  const cfg   = (saved && saved.cfg) || BUILT_IN_CONFIG;
+  const board = (saved && saved.boardId) || BUILT_IN_BOARD;
+
+  const status = live
+    ? `<p>Connected to the shared board <code>${esc(board)}</code>. Everything you file or annotate appears for everyone else on this link, and their changes appear here.</p>`
+    : `<p>Not connected. The board is saving to this browser only, so nobody else can see your records. Check your connection and reload — the shared board is configured and should connect on its own.</p>`;
+
+  const m = modal(live ? 'Connected to the shared board' : 'Not connected',
+    status +
+    `<p style="font-size:12.5px">Export a copy from Import / export before any large change if you want a rollback point.</p>
+     <details style="margin-top:6px"><summary style="cursor:pointer;font-family:var(--form);font-size:11px;letter-spacing:.06em;color:var(--ink-2)">Point this at a different database</summary>
+       <div style="padding-top:12px">
+         <p style="font-size:12.5px">Only needed for a separate board — a playtest branch, or a second project. Leave this alone otherwise.</p>
+         <div class="field"><label class="flab" for="fbBoard">Board name</label>
+           <input id="fbBoard" type="text" value="${esc(board)}"></div>
+         <div class="field"><label class="flab" for="fbCfg">Firebase config</label>
+           <textarea id="fbCfg">${esc(JSON.stringify(cfg, null, 2))}</textarea></div>
+         <button class="solid" id="go" style="margin-right:8px">Connect to this instead</button>
+         ${saved?'<button class="ghost" id="reset">Back to the default board</button>':''}
+       </div>
+     </details>`,
+    '<button class="ghost" id="done">Close</button>');
+
+  m.host.querySelector('#done').onclick = m.close;
+
+  const go = m.host.querySelector('#go');
+  if(go) go.onclick = async ()=>{
+    let parsed;
+    const raw = m.host.querySelector('#fbCfg').value.trim()
+      .replace(/^const\s+\w+\s*=\s*/,'').replace(/;$/,'');
+    try{ parsed = JSON.parse(raw); }
+    catch(e){
+      try{ parsed = (new Function('return ('+raw+')'))(); }
+      catch(e2){ toast('That config could not be read.'); return; }
+    }
+    if(!parsed || !parsed.databaseURL){ toast('The config needs a databaseURL.'); return; }
+    const boardId = m.host.querySelector('#fbBoard').value.trim() || BUILT_IN_BOARD;
+    localStorage.setItem('cyc.fb', JSON.stringify({cfg:parsed, boardId}));
+    m.close();
+    location.reload();
+  };
+
+  const reset = m.host.querySelector('#reset');
+  if(reset) reset.onclick = ()=>{ localStorage.removeItem('cyc.fb'); location.reload(); };
+}
+
+/* ---------- import / export ---------- */
+function dataDialog(){
+  const m = modal('Import and export',
+    `<p>Export writes the whole board — both tabs, every record and annotation — to a JSON file. Import merges a file back in; records already on the board keep whichever copy was edited most recently.</p>
+     <div class="field"><label class="flab" for="impText">Paste JSON to import</label>
+       <textarea id="impText" placeholder="Paste an exported board here, or an Order of Battle army list."></textarea></div>
+     <p style="font-size:12.5px">An army list from Order of Battle imports through a mapping step, where you assign each unit to a faction before anything is filed. Markdown export gives you the register as an indented outline for the rulebook draft.</p>`,
+    `<button class="solid" id="impArmy">Import an army list</button>
+     <button class="ghost" id="expJson">Export JSON</button>
+     <button class="ghost" id="expMd">Export Markdown</button>
+     <button class="ghost" id="impFile">Import a file</button>
+     <button class="ghost" id="impPaste">Import pasted text</button>
+     <button class="ghost" id="wipe">Clear this board</button>`);
+
+  m.host.querySelector('#impArmy').onclick = ()=>{
+    const txt = m.host.querySelector('#impText').value.trim();
+    m.close();
+    if(txt) startArmyImport(txt); else pickArmyFile();
+  };
+
+  m.host.querySelector('#expJson').onclick = ()=>{
+    download('cyclopean-register-'+stamp()+'.json',
+      JSON.stringify({format:'cyclopean-register-1', exported:now(), nodes:state.nodes, anns:state.anns},null,2),
+      'application/json');
+  };
+  m.host.querySelector('#expMd').onclick = ()=>{
+    download('cyclopean-register-'+stamp()+'.md', boardMarkdown(), 'text/markdown');
+  };
+  m.host.querySelector('#impPaste').onclick = ()=>{
+    const txt = m.host.querySelector('#impText').value.trim();
+    if(!txt){ toast('Nothing pasted yet.'); return; }
+    if(importJSON(txt)) m.close();
+  };
+  m.host.querySelector('#impFile').onclick = ()=>{
+    const f = document.createElement('input'); f.type='file'; f.accept='.json,application/json';
+    f.onchange = ()=>{ const file=f.files[0]; if(!file) return;
+      const r=new FileReader(); r.onload=()=>{ if(importJSON(r.result)) m.close(); }; r.readAsText(file); };
+    f.click();
+  };
+  m.host.querySelector('#wipe').onclick = ()=>{
+    if(!confirm('Remove every record on the '+state.board+' board? Export first if you want a copy.')) return;
+    rootsOf(state.board).forEach(r=>deleteNode(r.id));
+    m.close();
+  };
+}
+
+function importJSON(txt){
+  let data;
+  try{ data = JSON.parse(txt); }
+  catch(e){ toast('That is not valid JSON.'); return false; }
+  if(!data.nodes){
+    /* not a register export — treat it as an army list and open the mapper */
+    startArmyImport(txt);
+    return true;
+  }
+  let added=0, updated=0;
+  Object.values(data.nodes).forEach(n=>{
+    const cur = state.nodes[n.id];
+    if(!cur){ putNode(n); added++; }
+    else if((n.updated||0) > (cur.updated||0)){ putNode(n); updated++; }
+  });
+  Object.values(data.anns||{}).forEach(a=>{ if(!state.anns[a.id]){ putAnn(a); } });
+  render();
+  toast(added+' new, '+updated+' updated.');
+  return true;
+}
+
+function boardMarkdown(){
+  let out = '# Cyclopean — '+(state.board==='register'?'Register':'Mechanics')+'\n\n';
+  const walk = (n, d) => {
+    const pad='  '.repeat(d);
+    out += pad+'- **'+(n.title||'(untitled)')+'** — '+KINDS[n.kind].label+
+           ' · '+STATUSES[n.status||'submitted'].label+' · '+(n.author||'Unsigned')+'\n';
+    if(n.body) out += pad+'  \n'+n.body.split('\n').map(l=>pad+'  '+l).join('\n')+'\n';
+    annsFor(n.id).forEach(a=>{
+      out += pad+'  - _'+(a.author||'Unsigned')+(a.done?', resolved':'')+':_ '+a.text.replace(/\n/g,' ')+'\n';
+    });
+    childrenOf(n.id).forEach(c=>walk(c,d+1));
+  };
+  rootsOf(state.board).forEach(r=>walk(r,0));
+  return out;
+}
+
+function copyBranch(id){
+  const n = state.nodes[id];
+  let out = '';
+  const walk = (x,d)=>{
+    out += '  '.repeat(d)+'- '+(x.title||'(untitled)')+' ['+KINDS[x.kind].label+']\n';
+    if(x.body) out += x.body.split('\n').map(l=>'  '.repeat(d)+'  '+l).join('\n')+'\n';
+    childrenOf(x.id).forEach(c=>walk(c,d+1));
+  };
+  walk(n,0);
+  navigator.clipboard.writeText(out).then(
+    ()=>toast('Branch copied to the clipboard.'),
+    ()=>toast('Clipboard blocked by the browser.'));
+}
+
+function download(name, text, type){
+  const b = new Blob([text],{type});
+  const u = URL.createObjectURL(b);
+  const a = document.createElement('a');
+  a.href=u; a.download=name; a.click();
+  setTimeout(()=>URL.revokeObjectURL(u),1500);
+  toast('Saved '+name);
+}
+function stamp(){ const d=new Date();
+  return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0'); }
+
+let toastTimer;
+function toast(msg){
+  const h=document.getElementById('toastHost');
+  h.innerHTML='<div class="toast">'+esc(msg)+'</div>';
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>h.innerHTML='',3200);
+}
+
+/* ==========================================================================
+   ARMY LIST IMPORT
+   Reads an arbitrary JSON export, finds the array that looks like units,
+   lets you map the fields and assign a faction per unit before filing.
+   ========================================================================== */
+const NAME_KEYS    = ['name','title','unitname','unit','label','designation'];
+const FACTION_KEYS = ['faction','army','force','allegiance','list','listname','side','detachment'];
+const WEAPON_KEYS  = ['weapons','weaponprofiles','profiles','armament','arms','guns','loadout'];
+const ABILITY_KEYS = ['abilities','specialrules','rules','traits','specials'];
+const NOISE_KEYS   = ['id','uid','key','_id','order','index','guid','created','updated','modified'];
+/* keys that mark an object as a weapon profile rather than a unit */
+const WEAPONISH    = ['dice','sides','tn','imp','impact','anti','akind','los','range','mode'];
+/* keys that mark an object as a unit */
+const UNITISH      = ['track','stands','move','points','pts','cost','models','tier','element','cls','weapons','abilities','wounds'];
+
+const lc = s => String(s).toLowerCase().replace(/[\s_\-]/g,'');
+function pick(obj, keys){
+  for(const k of keys){
+    const f = Object.keys(obj||{}).find(x=>lc(x)===lc(k));
+    if(f!==undefined) return f;
+  }
+  return null;
+}
+/* field names the Ordnance Ledger and Order of Battle use, spelled out */
+const LABELS = {
+  cls:'Class', tn:'Target number', imp:'Impact', akind:'Anti type', anti:'Anti rating',
+  track:'Wound track', pts:'Points', wt:'Wound threshold', los:'Line of sight only',
+  atbase:'Tank baseline', dice:'Dice', sides:'Die type', mv:'Move', ld:'Leadership',
+  a1:'1-cost abilities', a2:'2-cost abilities', a3:'3-cost abilities', sp:'Special rules'
+};
+function human(k){
+  const hit = LABELS[lc(k)];
+  if(hit) return hit;
+  return String(k).replace(/[_\-]+/g,' ').replace(/([a-z0-9])([A-Z])/g,'$1 $2')
+    .replace(/^./,c=>c.toUpperCase());
+}
+
+function scoreArray(arr){
+  const sample = arr.slice(0,6).filter(x=>x&&typeof x==='object'&&!Array.isArray(x));
+  if(!sample.length) return -99;
+  let s = 0;
+  const keys = new Set();
+  sample.forEach(o=>Object.keys(o).forEach(k=>keys.add(lc(k))));
+  if([...keys].some(k=>NAME_KEYS.includes(k))) s += 4;
+  UNITISH.forEach(k=>{ if(keys.has(lc(k))) s += 3; });
+  WEAPONISH.forEach(k=>{ if(keys.has(lc(k))) s -= 2; });
+  if(arr.length > 1) s += 1;
+  return s;
+}
+
+function findUnitArrays(root){
+  const seen = new Map();
+  const walk = (v, path) => {
+    if(Array.isArray(v)){
+      const objs = v.filter(x=>x && typeof x==='object' && !Array.isArray(x));
+      if(objs.length){
+        const key = (path||'(top level)').replace(/\[\d+\]/g,'[]');
+        const cand = {path:key, arr:v, score:scoreArray(v)};
+        const prev = seen.get(key);
+        if(!prev || v.length > prev.arr.length) seen.set(key, cand);
+      }
+      v.forEach((x,i)=>{ if(x && typeof x==='object') walk(x, (path||'')+'['+i+']'); });
+    } else if(v && typeof v==='object'){
+      /* a collection keyed by id counts too — that is how the register itself exports */
+      const vals = Object.values(v);
+      if(vals.length > 1 && vals.every(x=>x && typeof x==='object' && !Array.isArray(x))){
+        const key = (path||'(top level)').replace(/\[\d+\]/g,'[]');
+        const sc = scoreArray(vals);
+        if(sc > 0 && !seen.has(key)) seen.set(key, {path:key, arr:vals, score:sc});
+      }
+      Object.keys(v).forEach(k=>walk(v[k], path ? path+'.'+k : k));
+    }
+  };
+  walk(root, '');
+  return [...seen.values()].sort((a,b)=>b.score-a.score || b.arr.length-a.arr.length);
+}
+
+/* ---- formatting source records into readable body text ---- */
+function scalarText(v){
+  if(v===null || v===undefined) return '';
+  if(Array.isArray(v)) return v.map(x=>typeof x==='object'?flatObj(x):String(x)).join(', ');
+  if(typeof v==='object') return flatObj(v);
+  if(typeof v==='boolean') return v?'yes':'no';
+  return String(v);
+}
+function flatObj(o){
+  return Object.keys(o).filter(k=>!NOISE_KEYS.includes(lc(k)))
+    .map(k=>human(k)+' '+scalarText(o[k])).join(', ');
+}
+
+function weaponText(w){
+  if(typeof w !== 'object' || w===null) return String(w);
+  const g = keys => { const f = pick(w, keys); return f===null ? undefined : w[f]; };
+  const mode  = g(['mode','type']);
+  const melee = String(mode||'').toLowerCase()==='melee';
+  const dice  = g(['dice','d','attacks','shots']);
+  const sides = g(['sides','die','dietype']);
+  const tn    = g(['tn','target','targetnumber','skill']);
+  const imp   = g(['imp','impact']);
+  const anti  = g(['anti','antirating','antix']);
+  const akind = g(['akind','antitype','antikind']);
+  const rng   = g(['range']);
+  const los   = g(['los','artillery']);
+
+  const bits = [];
+  if(mode) bits.push(String(mode));
+  if(dice!==undefined && dice!=='') bits.push(dice+'d'+(sides||6));
+  if(tn!==undefined && tn!=='') bits.push(melee ? ('skill '+tn) : ('TN '+tn+'+'));
+  if(imp) bits.push('Impact '+imp);
+  if(anti) bits.push('Anti-'+({inf:'Infantry',tank:'Tank',air:'Aircraft'}[String(akind).toLowerCase()] || akind || 'X')+' '+anti);
+  if(!melee && rng!==undefined && rng!=='') bits.push(rng+'"');
+  if(los===true || los==='true') bits.push('line of sight only');
+
+  if(!bits.length) return flatObj(w);
+  /* append anything the formatter did not already use */
+  const used = ['mode','type','dice','d','attacks','shots','sides','die','dietype','tn','target','targetnumber',
+                'skill','imp','impact','anti','antirating','antix','akind','antitype','antikind','range','los','artillery']
+                .concat(NAME_KEYS, NOISE_KEYS);
+  const extra = Object.keys(w).filter(k=>!used.includes(lc(k)) && w[k]!=='' && w[k]!=null)
+    .map(k=>human(k)+' '+scalarText(w[k]));
+  return bits.join(', ') + (extra.length ? '. '+extra.join(', ') : '');
+}
+
+function abilityText(a){
+  if(typeof a !== 'object' || a===null) return String(a);
+  const costF = pick(a,['cost','elementcost','points','tier']);
+  const textF = pick(a,['text','description','desc','effect','rule','body']);
+  const lines = [];
+  if(costF) lines.push('Cost: '+scalarText(a[costF]));
+  if(textF) lines.push(scalarText(a[textF]));
+  const used = [costF, textF].filter(Boolean).map(lc).concat(NAME_KEYS, NOISE_KEYS);
+  Object.keys(a).filter(k=>!used.includes(lc(k)) && a[k]!=='' && a[k]!=null)
+    .forEach(k=>lines.push(human(k)+': '+scalarText(a[k])));
+  return lines.join('\n');
+}
+
+function childList(rec, keyList, formatter){
+  const f = pick(rec, keyList);
+  if(!f || !Array.isArray(rec[f])) return [];
+  return rec[f].map((x,i)=>{
+    const nf = (typeof x==='object' && x!==null) ? pick(x, NAME_KEYS) : null;
+    return {
+      title: nf ? String(x[nf]) : (typeof x==='string' ? x : 'Entry '+(i+1)),
+      body: formatter(x)
+    };
+  }).filter(x=>x.title);
+}
+
+function bodyFromRecord(rec, skip){
+  const skipSet = new Set(skip.filter(Boolean).map(lc).concat(NOISE_KEYS));
+  return Object.keys(rec)
+    .filter(k=>!skipSet.has(lc(k)))
+    .filter(k=>rec[k]!==''&&rec[k]!==null&&rec[k]!==undefined)
+    .filter(k=>!(Array.isArray(rec[k]) && !rec[k].length))
+    .map(k=>human(k)+': '+scalarText(rec[k]))
+    .join('\n');
+}
+
+/* ==========================================================================
+   ORDER OF BATTLE — native format
+   Recognised without a mapping step. Reads the full stat line, resolves
+   element keys through SETS, and turns weapons and abilities into children.
+   ========================================================================== */
+const CLS_LABEL = {inf:'Infantry', veh:'Vehicle'};
+const SUB_LABEL = {none:'', attachment:'Attachment', mechanized:'Mechanized', walker:'Walker'};
+
+function detectOOB(data){
+  if(!data || !Array.isArray(data.units) || !data.units.length) return null;
+  const u = data.units[0];
+  if(typeof u!=='object' || u===null) return null;
+  const marks = ['track','stands','weapons','abilities','els','cls'].filter(k=>k in u);
+  if(marks.length < 4) return null;
+  return {units:data.units, sets:data.SETS || {}};
+}
+
+/* element key -> display name, scoped to the unit's set */
+function elsLookup(sets, setKey){
+  const defs = (sets[setKey] && sets[setKey].els) || [];
+  const map = {};
+  defs.forEach(e=>{ if(e && e.k) map[e.k] = e.n || e.k; });
+  return k => map[k] || (String(k).charAt(0).toUpperCase()+String(k).slice(1));
+}
+function setLabel(sets, setKey, fallback){
+  return (sets[setKey] && sets[setKey].label) || fallback || setKey || '';
+}
+
+const numv = v => { const x = parseFloat(v); return isNaN(x) ? 0 : x; };
+const boolv = v => v===true || v==='true';
+
+function oobWeapon(w){
+  const melee = boolv(w.melee);
+  const bits = [melee ? 'Melee' : 'Ranged'];
+  bits.push(numv(w.dice)+'d'+(numv(w.sides)||6));
+  bits.push(melee ? ('skill '+numv(w.tn)) : ('TN '+numv(w.tn)+'+'));
+  if(numv(w.imp)) bits.push('Impact '+numv(w.imp));
+  if(numv(w.ai))  bits.push('Anti-Infantry '+numv(w.ai));
+  if(numv(w.at))  bits.push('Anti-Tank '+numv(w.at));
+  if(numv(w.aa))  bits.push('Anti-Aircraft '+numv(w.aa));
+  if(!melee && numv(w.range)) bits.push(numv(w.range)+'"');
+  if(boolv(w.los))   bits.push('line of sight only');
+  if(boolv(w.blast)) bits.push('blast');
+  if(numv(w.box))    bits.push('box '+numv(w.box));
+  const line = bits.join(', ');
+  return (w.so && String(w.so).trim()) ? line+'\n\n'+String(w.so).trim() : line;
+}
+
+function oobAbility(a, elName){
+  const els = Array.isArray(a.els) ? a.els.filter(Boolean) : [];
+  const head = [];
+  if(a.cost !== undefined && a.cost !== '') head.push(numv(a.cost)+'-cost');
+  if(els.length) head.push(els.map(elName).join(' + '));
+  const text = String(a.effect || a.custom || '').trim();
+  return (head.length ? head.join(' — ') : '') + (head.length && text ? '\n\n' : '') + text;
+}
+
+function oobUnitBody(u, sets){
+  const elName = elsLookup(sets, u.set);
+  const L = [];
+  const sub = SUB_LABEL[u.sub] !== undefined ? SUB_LABEL[u.sub] : human(u.sub||'');
+  L.push(['Class', (CLS_LABEL[u.cls] || u.cls || '—') + (sub ? ' ('+sub.toLowerCase()+')' : '')]);
+  if(Array.isArray(u.els) && u.els.length) L.push(['Elements', u.els.map(elName).join(', ')]);
+  L.push(['Stands', u.stands]);
+  L.push(['Move', (u.move ?? '—')+'"']);
+  L.push(['Fight', u.fight]);
+  L.push(['Wound track', u.track]);
+  if(boolv(u.aircraft)) L.push(['Aircraft', 'yes']);
+  if(boolv(u.squadron)) L.push(['Squadron', 'yes']);
+  if(u.rules && String(u.rules).trim()) L.push(['Special rules', String(u.rules).trim()]);
+  if(u.cn && String(u.cn).trim()) L.push(['Alternate name', String(u.cn).trim()]);
+  const pts = (u.override && String(u.override).trim()) ? String(u.override).trim()+' (override)' : u.points;
+  L.push(['Points', (pts===0 || pts==='0') ? 'not yet costed' : pts]);
+  return L.filter(([,v])=>v!==undefined && v!==null && v!=='')
+          .map(([k,v])=>k+': '+v).join('\n');
+}
+
+/* the leading entry in `rules` is usually the lineage — Deep One, Tidewatch, Eldritch */
+function oobLeadRule(u){
+  const first = String(u.rules||'').split(',')[0];
+  return first.replace(/\([^)]*\)/g,'').trim();
+}
+
+/* grouping options offered in the staging table */
+function oobGroupers(sets){
+  return [
+    {key:'rule', label:'Leading special rule', fn:oobLeadRule},
+    {key:'cls',  label:'Class',                fn:u=>CLS_LABEL[u.cls] || u.cls || ''},
+    {key:'sub',  label:'Sub-type',             fn:u=>SUB_LABEL[u.sub] !== undefined ? SUB_LABEL[u.sub] : human(u.sub||'')},
+    {key:'els',  label:'First element',        fn:u=>{
+      const e = (u.els||[])[0]; return e ? elsLookup(sets, u.set)(e) : ''; }}
+  ];
+}
+
+function oobMapRow(sets){
+  return (u)=>{
+    const elName = elsLookup(sets, u.set);
+    return {
+      title: String(u.name||'').trim() || 'Untitled unit',
+      srcFac: setLabel(sets, u.set, u.faction),
+      sub: oobLeadRule(u),
+      raw: u,
+      body: oobUnitBody(u, sets),
+      weapons: (u.weapons||[]).map(w=>({title:String(w.name||'Weapon').trim(), body:oobWeapon(w)})),
+      abilities: (u.abilities||[]).map(a=>({title:String(a.name||'Ability').trim(), body:oobAbility(a, elName)})),
+      tags: ['imported', String(u.faction||'').toLowerCase(), u.cls].filter(Boolean).join(', ')
+    };
+  };
+}
+
+/* loose match so "Ithaqua" finds an existing "Sons of Ithaqua" */
+function matchFaction(label, factions){
+  if(!label) return null;
+  const want = lc(label);
+  let hit = factions.find(f=>lc(f.title||'')===want);
+  if(hit) return hit;
+  if(want.length >= 4){
+    hit = factions.find(f=>{ const t = lc(f.title||''); return t.includes(want) || want.includes(t); });
+  }
+  return hit || null;
+}
+
+/* ---- stage 1: pick the source array and map the fields ---- */
+function pickArmyFile(){
+  const f = document.createElement('input');
+  f.type='file'; f.accept='.json,application/json';
+  f.onchange = ()=>{ const file=f.files[0]; if(!file) return;
+    const r=new FileReader(); r.onload=()=>startArmyImport(r.result); r.readAsText(file); };
+  f.click();
+}
+
+function startArmyImport(txt, forceManual){
+  let data;
+  try{ data = JSON.parse(txt); }
+  catch(e){ toast('That is not valid JSON.'); return; }
+
+  /* native Order of Battle export — no mapping needed */
+  const oob = detectOOB(data);
+  if(oob && !forceManual){
+    stageArmyImport({
+      arr: oob.units,
+      kind: 'unit',
+      mapRow: oobMapRow(oob.sets),
+      groupers: oobGroupers(oob.sets),
+      source: 'Order of Battle',
+      raw: txt
+    });
+    return;
+  }
+
+  const cands = findUnitArrays(data);
+  if(!cands.length){ toast('No list of units found in that file.'); return; }
+
+  const m = modal('Import an army list — step 1 of 2',
+    `<p>Pick the list of units in the file, then confirm which field holds the name. Everything else becomes the record description.</p>
+     <div class="maprow">
+       <div><span class="flab" style="display:block;margin-bottom:4px">Units are in</span>
+         <select id="srcArr">${cands.map((c,i)=>
+           `<option value="${i}">${esc(c.path)} — ${c.arr.length} entr${c.arr.length===1?'y':'ies'}</option>`).join('')}</select></div>
+       <div><span class="flab" style="display:block;margin-bottom:4px">Name field</span>
+         <select id="srcName"></select></div>
+     </div>
+     <div class="maprow">
+       <div><span class="flab" style="display:block;margin-bottom:4px">Group by faction using</span>
+         <select id="srcFac"></select></div>
+       <div><span class="flab" style="display:block;margin-bottom:4px">File units as</span>
+         <select id="srcKind">
+           <option value="unit">Unit</option>
+           <option value="ability">Ability</option>
+           <option value="wargear">Wargear</option>
+           <option value="note">Note</option>
+         </select></div>
+     </div>
+     <div class="optrow">
+       <label><input type="checkbox" id="optWeap" checked> Weapons become child records</label>
+       <label><input type="checkbox" id="optAbil" checked> Abilities become child records</label>
+     </div>
+     <span class="flab" style="display:block;margin-bottom:4px">First entry</span>
+     <div class="previewbox" id="prev"></div>`,
+    '<button class="solid" id="next">Continue</button><button class="ghost" id="cancel">Cancel</button>');
+
+  const arrSel = m.host.querySelector('#srcArr');
+  const nameSel= m.host.querySelector('#srcName');
+  const facSel = m.host.querySelector('#srcFac');
+
+  function refresh(){
+    const arr = cands[+arrSel.value].arr;
+    const keys = [...new Set(arr.slice(0,20).flatMap(o=>Object.keys(o||{})))];
+    const guessN = pick(arr[0]||{}, NAME_KEYS) || keys[0];
+    const guessF = pick(arr[0]||{}, FACTION_KEYS);
+    nameSel.innerHTML = keys.map(k=>`<option value="${esc(k)}"${k===guessN?' selected':''}>${esc(human(k))}</option>`).join('');
+    facSel.innerHTML  = '<option value="">Nothing — I will assign each one</option>'+
+      keys.map(k=>`<option value="${esc(k)}"${k===guessF?' selected':''}>${esc(human(k))}</option>`).join('');
+    m.host.querySelector('#prev').textContent = JSON.stringify(arr[0], null, 1).slice(0,900);
+  }
+  arrSel.onchange = refresh;
+  refresh();
+
+  m.host.querySelector('#cancel').onclick = m.close;
+  m.host.querySelector('#next').onclick = ()=>{
+    const nameField = nameSel.value, facField = facSel.value;
+    const useW = m.host.querySelector('#optWeap').checked;
+    const useA = m.host.querySelector('#optAbil').checked;
+    const cfg = {
+      arr: cands[+arrSel.value].arr,
+      kind: m.host.querySelector('#srcKind').value,
+      source: 'this file',
+      mapRow: (rec)=>{
+        const wf = useW ? pick(rec, WEAPON_KEYS)  : null;
+        const af = useA ? pick(rec, ABILITY_KEYS) : null;
+        return {
+          title: String(rec[nameField] ?? '').trim() || 'Untitled entry',
+          srcFac: facField ? String(rec[facField]||'').trim() : '',
+          body: bodyFromRecord(rec, [nameField, facField, wf, af]),
+          weapons:   useW ? childList(rec, WEAPON_KEYS,  weaponText)  : [],
+          abilities: useA ? childList(rec, ABILITY_KEYS, abilityText) : [],
+          tags: 'imported'
+        };
+      }
+    };
+    m.close();
+    stageArmyImport(cfg);
+  };
+}
+
+/* ---- stage 2: assign a faction to every unit ---- */
+function stageArmyImport(cfg){
+  const factions = rootsOf('register');
+  const rows = cfg.arr.filter(r=>r && typeof r==='object').map((rec,i)=>
+    Object.assign({i, include:true, dest:null, sub:'', weapons:[], abilities:[], tags:'imported'},
+      cfg.mapRow(rec, i)));
+
+  /* build the destination options once */
+  const srcFacs = [...new Set(rows.map(r=>r.srcFac).filter(Boolean))];
+  const opts = [];
+  factions.forEach(f=>opts.push({v:f.id, t:f.title||'(untitled faction)'}));
+  srcFacs.forEach(s=>{ if(!matchFaction(s, factions)) opts.push({v:'new:'+s, t:'New faction — '+s}); });
+  opts.push({v:'new:Imported units', t:'New faction — Imported units'});
+  opts.push({v:'skip', t:'Skip this one'});
+
+  rows.forEach(r=>{
+    const hit = matchFaction(r.srcFac, factions);
+    r.dest = hit ? hit.id : (r.srcFac ? 'new:'+r.srcFac : (factions[0] ? factions[0].id : 'new:Imported units'));
+  });
+
+  /* every sub-faction name we could suggest: existing ones, plus every grouper's output */
+  const existingSubs = Object.values(state.nodes)
+    .filter(n=>n.kind==='subfaction' && n.title).map(n=>n.title);
+  const grouperSubs = (cfg.groupers||[]).flatMap(g=>rows.map(r=>{
+    try{ return g.fn(r.raw); }catch(e){ return ''; }
+  }));
+  const subSuggestions = [...new Set([...existingSubs, ...rows.map(r=>r.sub), ...grouperSubs])]
+    .filter(Boolean).sort();
+
+  const optHTML = sel => opts.map(o=>
+    `<option value="${esc(o.v)}"${o.v===sel?' selected':''}>${esc(o.t)}</option>`).join('');
+
+  const groupHTML = (cfg.groupers||[]).length ? `
+     <div class="bulkrow">
+       <span>Group into sub-factions by</span>
+       <select id="grouper">
+         <option value="">Nothing — file units straight under the faction</option>
+         ${cfg.groupers.map(g=>`<option value="${esc(g.key)}">${esc(g.label)}</option>`).join('')}
+       </select>
+       <button class="ghost" id="applyGroup" style="padding:7px 12px">Apply</button>
+     </div>` : '';
+
+  const m = modal('Import an army list — assign factions',
+    `<p>Read ${rows.length} unit${rows.length===1?'':'s'} from ${esc(cfg.source||'the file')}. Sub-faction is free text: leave a row blank to file that unit directly under the faction.</p>
+     <div class="bulkrow">
+       <span>Set all factions to</span>
+       <select id="bulk">${optHTML(null)}</select>
+       <button class="ghost" id="applyAll" style="padding:7px 12px">Apply</button>
+     </div>
+     ${groupHTML}
+     <datalist id="subOpts">${subSuggestions.map(s=>`<option value="${esc(s)}"></option>`).join('')}</datalist>
+     <div class="stage"><table>
+       <thead><tr><th style="width:28px"></th><th>Unit</th><th style="width:31%">Faction</th><th style="width:26%">Sub-faction</th></tr></thead>
+       <tbody>${rows.map(r=>`
+         <tr data-i="${r.i}">
+           <td><input type="checkbox" data-inc="${r.i}" checked></td>
+           <td><div class="nm">${esc(r.title)}</div>
+               <div class="sub">${r.weapons.length} weapon${r.weapons.length===1?'':'s'} · ${r.abilities.length} abilit${r.abilities.length===1?'y':'ies'}</div></td>
+           <td><select data-dest="${r.i}">${optHTML(r.dest)}</select></td>
+           <td><input type="text" data-sub="${r.i}" list="subOpts" value="${esc(r.sub||'')}" placeholder="none"></td>
+         </tr>`).join('')}
+       </tbody>
+     </table></div>
+     ${cfg.raw?'<p style="font-size:12.5px;margin-top:12px">Not reading it the way you expected? <button id="manual" style="text-decoration:underline;color:var(--stamp)">Map the fields by hand instead.</button></p>':''}`,
+    '<button class="solid" id="file">File these records</button><button class="ghost" id="cancel">Cancel</button>');
+
+  const byIndex = Object.fromEntries(rows.map(r=>[r.i, r]));
+
+  m.host.querySelectorAll('[data-inc]').forEach(cb=>{
+    cb.onchange = ()=>{
+      byIndex[cb.dataset.inc].include = cb.checked;
+      cb.closest('tr').classList.toggle('off', !cb.checked);
+    };
+  });
+  m.host.querySelectorAll('[data-dest]').forEach(sel=>{
+    sel.onchange = ()=>{ byIndex[sel.dataset.dest].dest = sel.value; };
+  });
+  m.host.querySelectorAll('[data-sub]').forEach(inp=>{
+    inp.oninput = ()=>{ byIndex[inp.dataset.sub].sub = inp.value.trim(); };
+  });
+  m.host.querySelector('#applyAll').onclick = ()=>{
+    const v = m.host.querySelector('#bulk').value;
+    m.host.querySelectorAll('[data-dest]').forEach(sel=>{
+      sel.value = v; byIndex[sel.dataset.dest].dest = v;
+    });
+  };
+  const applyGroup = m.host.querySelector('#applyGroup');
+  if(applyGroup) applyGroup.onclick = ()=>{
+    const key = m.host.querySelector('#grouper').value;
+    const g = (cfg.groupers||[]).find(x=>x.key===key);
+    m.host.querySelectorAll('[data-sub]').forEach(inp=>{
+      const r = byIndex[inp.dataset.sub];
+      let v = '';
+      if(g){ try{ v = String(g.fn(r.raw)||'').trim(); }catch(e){ v=''; } }
+      inp.value = v; r.sub = v;
+    });
+  };
+  m.host.querySelector('#cancel').onclick = m.close;
+  const manual = m.host.querySelector('#manual');
+  if(manual) manual.onclick = ()=>{ m.close(); startArmyImport(cfg.raw, true); };
+  m.host.querySelector('#file').onclick = ()=>{ m.close(); commitArmyImport(rows, cfg); };
+}
+
+/* ---- silent node creation used by the importer ---- */
+function makeNode(kind, parentId, title, body, tags){
+  const parent = parentId ? state.nodes[parentId] : null;
+  const board  = parent ? parent.board : (KINDS[kind].board || 'register');
+  const sibs   = parentId ? childrenOf(parentId) : rootsOf(board);
+  const n = {
+    id: uid(KINDS[kind].code.toLowerCase()),
+    parent: parentId || null,
+    board, kind,
+    title: title || '',
+    body: body || '',
+    status: 'submitted',
+    tags: tags || '',
+    author: state.who || 'Unsigned',
+    created: now(), updated: now(), updatedBy: state.who || 'Unsigned',
+    order: sibs.length ? (sibs[sibs.length-1].order||0)+1 : 0
+  };
+  putNode(n);
+  return n.id;
+}
+
+function commitArmyImport(rows, cfg){
+  const newFactions = {};
+  const subCache = {};
+  let units = 0, kids = 0, made = 0, subsMade = 0;
+
+  rows.forEach(r=>{
+    if(!r.include || r.dest==='skip') return;
+    let parentId = r.dest;
+    if(String(parentId).startsWith('new:')){
+      const label = parentId.slice(4) || 'Imported units';
+      if(!newFactions[label]){
+        newFactions[label] = makeNode('faction', null, label, 'Created by army list import.', 'imported');
+        made++;
+      }
+      parentId = newFactions[label];
+    }
+    if(!state.nodes[parentId]) return;
+
+    /* resolve the sub-faction, reusing an existing branch where one matches */
+    const subName = String(r.sub||'').trim();
+    if(subName){
+      const ck = parentId+'::'+lc(subName);
+      if(!subCache[ck]){
+        const existing = childrenOf(parentId)
+          .find(c=>c.kind==='subfaction' && lc(c.title||'')===lc(subName));
+        if(existing) subCache[ck] = existing.id;
+        else { subCache[ck] = makeNode('subfaction', parentId, subName, '', 'imported'); subsMade++; }
+      }
+      parentId = subCache[ck];
+    }
+
+    const nodeId = makeNode(cfg.kind, parentId, r.title, r.body, r.tags || 'imported');
+    units++;
+    const allowed = KINDS[cfg.kind].children;
+    if(allowed.includes('wargear')) r.weapons.forEach(w=>{ makeNode('wargear', nodeId, w.title, w.body, 'imported'); kids++; });
+    if(allowed.includes('ability')) r.abilities.forEach(a=>{ makeNode('ability', nodeId, a.title, a.body, 'imported'); kids++; });
+    if(!allowed.includes('wargear') && allowed.includes('note'))
+      r.weapons.forEach(w=>{ makeNode('note', nodeId, w.title, w.body, 'imported'); kids++; });
+    if(!allowed.includes('ability') && allowed.includes('note'))
+      r.abilities.forEach(a=>{ makeNode('note', nodeId, a.title, a.body, 'imported'); kids++; });
+  });
+
+  state.board = 'register';
+  document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected', t.dataset.board==='register'));
+  render();
+  toast(units+' filed'+(made?', '+made+' new faction'+(made===1?'':'s'):'')+
+        (subsMade?', '+subsMade+' sub-faction'+(subsMade===1?'':'s'):'')+
+        (kids?', '+kids+' child record'+(kids===1?'':'s'):'')+'.');
+}
+
+/* ==========================================================================
+   REPARENTING
+   ========================================================================== */
+function reparentDialog(id){
+  const n = state.nodes[id];
+  const banned = new Set([id, ...descendants(id)]);
+  const opts = [];
+  if(ROOT_KIND[n.board] === n.kind) opts.push({v:'', t:'Top level of this board'});
+  Object.values(state.nodes)
+    .filter(x=>x.board===n.board && !banned.has(x.id) && KINDS[x.kind].children.includes(n.kind))
+    .map(x=>({v:x.id, t:ancestry(x.id).map(p=>p.title||'untitled').concat(x.title||'(untitled '+KINDS[x.kind].label.toLowerCase()+')').join(' › ')}))
+    .sort((a,b)=>a.t.localeCompare(b.t))
+    .forEach(o=>opts.push(o));
+
+  if(!opts.length){
+    modal('Move record', '<p>There is nowhere else this record can go. A '+esc(KINDS[n.kind].label.toLowerCase())+
+      ' has to sit under a parent that accepts it, and no other record on this board does.</p>', '');
+    return;
+  }
+
+  const cur = n.parent || '';
+  const m = modal('Move '+(n.title||'this record'),
+    `<p>Pick the record it should file under. Anything already underneath it moves along with it.</p>
+     <div class="field"><span class="flab">Files under</span>
+       <select id="dest" style="width:100%;background:rgba(255,255,255,.55);border:1px solid var(--rule);padding:8px 10px;font-size:14px">
+         ${opts.map(o=>`<option value="${esc(o.v)}"${o.v===cur?' selected':''}>${esc(o.t)}</option>`).join('')}
+       </select></div>`,
+    '<button class="solid" id="go">Move it</button><button class="ghost" id="no">Cancel</button>');
+
+  m.host.querySelector('#no').onclick = m.close;
+  m.host.querySelector('#go').onclick = ()=>{
+    const dest = m.host.querySelector('#dest').value || null;
+    m.close();
+    reparent(id, dest);
+  };
+}
+
+function reparent(id, newParent){
+  const n = state.nodes[id];
+  if(!n || n.parent === (newParent||null)) return;
+  const sibs = newParent ? childrenOf(newParent) : rootsOf(n.board);
+  patchNode(id, {parent:newParent||null, order: sibs.length ? (sibs[sibs.length-1].order||0)+1 : 0});
+  if(newParent) state.collapsed.delete(newParent);
+  persistCollapsed();
+  render();
+  toast(newParent ? 'Moved under '+(state.nodes[newParent].title||'that record')+'.' : 'Moved to the top level.');
+}
+
+/* ==========================================================================
+   WIRING
+   ========================================================================== */
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.onclick = ()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected', t===tab));
+    state.board = tab.dataset.board;
+    state.selected = null;
+    render();
+  };
+});
+
+document.getElementById('q').addEventListener('input', e=>{
+  state.query = e.target.value; renderTree();
+});
+document.getElementById('statusFilter').addEventListener('click', e=>{
+  const b = e.target.closest('.chip'); if(!b) return;
+  document.querySelectorAll('#statusFilter .chip').forEach(c=>c.setAttribute('aria-pressed', c===b));
+  state.statusFilter = b.dataset.st; renderTree();
+});
+document.getElementById('expandAll').onclick = ()=>{ state.collapsed.clear(); persistCollapsed(); renderTree(); };
+document.getElementById('collapseAll').onclick = ()=>{
+  Object.values(state.nodes).forEach(n=>{ if(childrenOf(n.id).length) state.collapsed.add(n.id); });
+  persistCollapsed(); renderTree();
+};
+document.getElementById('bigAdd').onclick = ()=>{
+  if(!state.who){ needName(); return; }
+  askKind(null);
+};
+document.getElementById('recClose').onclick = ()=>document.getElementById('record').classList.remove('open');
+document.getElementById('syncBtn').onclick = syncDialog;
+document.getElementById('dataBtn').onclick = dataDialog;
+
+const whoIn = document.getElementById('whoName');
+whoIn.value = state.who;
+whoIn.addEventListener('input', e=>{ state.who=e.target.value.trim(); localStorage.setItem('cyc.who', state.who); });
+
+/* ==========================================================================
+   SEED — first run only, local mode
+   ========================================================================== */
+function seed(){
+  const mk = (kind,parent,title,body,status,tags,order)=>{
+    const id = uid(KINDS[kind].code.toLowerCase());
+    state.nodes[id] = {id, parent, board: parent?state.nodes[parent].board:KINDS[kind].board,
+      kind, title, body:body||'', status:status||'submitted', tags:tags||'',
+      author:'Austin', created:now()-Math.floor(Math.random()*8e6), updated:now(), updatedBy:'Austin', order:order||0};
+    return id;
+  };
+  const eod = mk('faction',null,'Esoteric Order of Dagon — Tidewatch',
+    'Occupying administration centred on Innsmouth and the New England coast. Fields the Tidewatch as a uniformed collaborator force alongside hybrid and Deep One elements. Elemental tiers run Shore, Reef, Abyss.',
+    'adopted','tidewatch, new england',0);
+  const wreck = mk('unit',eod,'Tidewatch Wreckers',
+    'Anti-materiel snipers drawn from the coastal wrecker tradition. Small unit, long reach, priced for denial rather than volume.',
+    'review','snipers',0);
+  mk('ability',wreck,'Salt-Glass Optics',
+    'Two cost. Ignores cover and concealment for this activation.','adopted','2-cost',0);
+  mk('ability',wreck,'The Long Watch',
+    'Three cost. Reactive fire when an enemy unit ends a move within range and line of sight.','adopted','3-cost',1);
+  mk('unit',eod,'Shore Detail',
+    'Line infantry of the occupation. The baseline everything else in the faction is measured against.','adopted','line',1);
+
+  const ith = mk('faction',null,'Sons of Ithaqua',
+    'Pacific Northwest empire running on pre-war manufacturing, extending into Canada and the northern Rockies. Holds territory because a stable society keeps the appetite fed.',
+    'adopted','ithaqua, pnw',1);
+  const abr = mk('unit',ith,'Abrams — three crews',
+    'One hull, three unit types. Order crews keep fire discipline. Hunger crews ram and fight from the hull. Turned crews are priestess-run, fast, and equally reckless.',
+    'review','armour',0);
+  mk('note',abr,'Costing question',
+    'The Ordnance Ledger undervalues the Hunger version because the ramming melee sits outside the offense engine. Likely a hand-set cost.','submitted','ordnance ledger',0);
+  mk('unit',ith,'Bone Speakers',
+    'Priestess attachments. Generate elements on activation but never Ravening. Fervent participants, not controllers.','submitted','attachment',1);
+
+  const rav = mk('mechanic',null,'Ravening',
+    'The sixth element. Generated only by deaths, friendly or enemy, within 12 inches of an Ithaqua unit. Accumulates in a persistent pool that does not reset at the end of a turn.',
+    'adopted','ithaqua, economy',0);
+  mk('rule',rav,'Spending architecture',
+    'Order and Hunger units pay two Ravening plus one element for a three-cost ability. Turned units pay entirely in Ravening. Priestesses pay heavily in both.',
+    'adopted','',0);
+  const act = mk('mechanic',null,'Activation and the bag',
+    'Alternating activations. The bag determines which units are available to activate, not the order in which they activate.',
+    'adopted','core',1);
+  mk('rule',act,'Common misreading',
+    'Draws do not queue units. A draw opens a window; the player still chooses which available unit goes.','adopted','',0);
+  mk('mechanic',null,'Wound thresholds',
+    'Binary threshold per volley. No carryover between volleys, excess successes are wasted, and wounds never exceed hits.',
+    'adopted','core',2);
+  saveLocal();
+}
+
+/* ==========================================================================
+   BOOT
+   ========================================================================== */
+(async function boot(){
+  const saved = JSON.parse(localStorage.getItem('cyc.fb')||'null');
+  const cfg     = (saved && saved.cfg) || BUILT_IN_CONFIG;
+  const boardId = (saved && saved.boardId) || BUILT_IN_BOARD;
+  if(cfg){
+    setSync('','Connecting…');
+    await connectFirebase(cfg, boardId, true);
+  }
+  if(state.backend==='local'){
+    const had = loadLocal();
+    /* only seed a board that has no shared database behind it */
+    if(!had && !BUILT_IN_CONFIG && !localStorage.getItem('cyc.seeded')){
+      seed(); localStorage.setItem('cyc.seeded','1');
+    }
+    setSync(BUILT_IN_CONFIG?'err':'', BUILT_IN_CONFIG?'Offline — not syncing':'Working offline');
+  }
+  render();
+})();
+</script>
+</body>
+</html>
