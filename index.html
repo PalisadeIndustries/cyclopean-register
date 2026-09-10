@@ -177,13 +177,62 @@ input,textarea,select{font:inherit;color:inherit}
 .row.dim{opacity:.34}
 
 .twist{
-  width:17px;height:17px;flex:0 0 17px;margin-top:2px;
-  border:1px solid var(--rule);background:rgba(255,255,255,.5);
-  font-family:var(--form);font-size:11px;line-height:15px;text-align:center;
-  color:var(--ink-2);transition:background .12s;
+  width:17px;height:17px;flex:0 0 17px;margin-top:3px;
+  font-family:var(--form);font-size:10px;line-height:17px;text-align:center;
+  color:var(--ink-2);transition:transform .12s;pointer-events:none;
 }
-.twist:hover{background:var(--concrete);color:var(--paper);border-color:var(--concrete)}
 .twist.leaf{visibility:hidden}
+.twist.open{transform:rotate(90deg)}
+.row.branch{cursor:pointer}
+
+.pts{
+  font-family:var(--form);font-size:10.5px;white-space:nowrap;flex:0 0 auto;
+  margin-top:3px;color:var(--brass);font-weight:700;letter-spacing:.02em;
+}
+.pts.roll{color:var(--ink-3);font-weight:400}
+.hasimg{
+  font-family:var(--form);font-size:10px;color:var(--ink-3);
+  border:1px solid var(--rule);padding:1px 5px;margin-top:3px;flex:0 0 auto;
+}
+
+/* card images */
+.img-strip{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.thumb{
+  position:relative;width:84px;height:84px;border:1px solid var(--rule);
+  background:rgba(255,255,255,.4);overflow:hidden;
+}
+.thumb img{width:100%;height:100%;object-fit:cover;cursor:zoom-in;display:block}
+.thumb-load{
+  font-family:var(--form);font-size:10px;color:var(--ink-3);
+  display:flex;align-items:center;justify-content:center;height:100%;
+}
+.thumb-x{
+  position:absolute;top:2px;right:2px;width:19px;height:19px;
+  background:rgba(33,42,35,.8);color:var(--paper);font-family:var(--form);
+  font-size:10px;line-height:19px;text-align:center;opacity:0;transition:opacity .12s;
+}
+.thumb:hover .thumb-x{opacity:1}
+.thumb-x:hover{background:var(--stamp)}
+.img-empty{
+  font-family:var(--form);font-size:11px;color:var(--ink-3);
+  border:1px dashed var(--rule);padding:14px;text-align:center;width:100%;
+}
+.img-add{
+  font-family:var(--form);font-size:10.5px;letter-spacing:.05em;
+  border:1px dashed var(--rule);background:rgba(255,255,255,.35);
+  padding:8px 12px;color:var(--ink-2);transition:all .12s;
+}
+.img-add:hover{background:rgba(255,255,255,.7);border-style:solid;border-color:var(--concrete)}
+.img-hint{font-family:var(--form);font-size:10px;color:var(--ink-3);margin-top:6px;line-height:1.5}
+.lightbox{
+  position:fixed;inset:0;background:rgba(20,25,21,.92);z-index:150;
+  display:flex;align-items:center;justify-content:center;padding:24px;cursor:zoom-out;
+}
+.lightbox img{max-width:100%;max-height:100%;object-fit:contain;border:1px solid var(--brass)}
+.lightbox .lb-cap{
+  position:absolute;bottom:14px;left:0;right:0;text-align:center;
+  font-family:var(--form);font-size:11px;color:#b9c2b4;
+}
 
 .kind{
   font-family:var(--form);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;
@@ -696,6 +745,128 @@ function setSync(kind,label){
 }
 
 /* ==========================================================================
+   CARD IMAGES
+   Stored on their own path and fetched only when a record is opened, so the
+   board tree stays small and nobody downloads every photo on every change.
+   Cloud Storage needs a billing account, so these live in the database as
+   downscaled JPEG data URLs.
+   ========================================================================== */
+const IMG_KEY = 'cyc.images.v1';
+state.imgCache = {};
+
+function localImages(){
+  try{ return JSON.parse(localStorage.getItem(IMG_KEY)||'{}'); }catch(e){ return {}; }
+}
+async function getImage(id){
+  if(state.imgCache[id]) return state.imgCache[id];
+  if(state.backend==='firebase'){
+    const snap = await fbRefs.mod.get(fbRefs.mod.ref(fbRefs.db, fbRefs.base+'/images/'+id));
+    const v = snap.val();
+    if(v) state.imgCache[id] = v;
+    return v;
+  }
+  const v = localImages()[id];
+  if(v) state.imgCache[id] = v;
+  return v;
+}
+function putImage(id, rec){
+  state.imgCache[id] = rec;
+  if(state.backend==='firebase'){
+    fbRefs.mod.set(fbRefs.mod.ref(fbRefs.db, fbRefs.base+'/images/'+id), rec);
+  } else {
+    const all = localImages(); all[id] = rec;
+    try{ localStorage.setItem(IMG_KEY, JSON.stringify(all)); }
+    catch(e){ toast('Local storage is full — connect to the shared board or remove some images.'); }
+  }
+}
+function dropImage(id){
+  delete state.imgCache[id];
+  if(state.backend==='firebase'){
+    fbRefs.mod.remove(fbRefs.mod.ref(fbRefs.db, fbRefs.base+'/images/'+id));
+  } else {
+    const all = localImages(); delete all[id];
+    localStorage.setItem(IMG_KEY, JSON.stringify(all));
+  }
+}
+
+/* arrays round-trip from the database as objects when sparse */
+function imgsOf(n){
+  const v = n && n.imgs;
+  if(!v) return [];
+  return Array.isArray(v) ? v.filter(Boolean) : Object.values(v).filter(Boolean);
+}
+
+/* shrink before storing — phone photos of a card are far larger than needed */
+function downscale(file, maxEdge, quality){
+  return new Promise((res, rej)=>{
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = ()=>{
+      URL.revokeObjectURL(url);
+      let w = img.naturalWidth, h = img.naturalHeight;
+      const s = Math.min(1, maxEdge/Math.max(w,h));
+      w = Math.max(1, Math.round(w*s)); h = Math.max(1, Math.round(h*s));
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#fff'; ctx.fillRect(0,0,w,h);
+      ctx.drawImage(img, 0, 0, w, h);
+      res(c.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = ()=>{ URL.revokeObjectURL(url); rej(new Error('unreadable')); };
+    img.src = url;
+  });
+}
+
+async function addImages(nodeId, files){
+  const n = state.nodes[nodeId]; if(!n) return;
+  const ids = imgsOf(n);
+  let added = 0;
+  for(const f of files){
+    if(!f || !String(f.type||'').startsWith('image/')) continue;
+    try{
+      let data = await downscale(f, 1400, 0.72);
+      if(data.length > 900000) data = await downscale(f, 1000, 0.6);
+      if(data.length > 1400000){ toast('That image is too large even after shrinking.'); continue; }
+      const id = uid('img');
+      putImage(id, {data, node:nodeId, name:String(f.name||'card').slice(0,80),
+                    created:now(), by:state.who||'Unsigned'});
+      ids.push(id); added++;
+    }catch(e){ toast('Could not read that image.'); }
+  }
+  if(!added) return;
+  patchNode(nodeId, {imgs:ids});
+  render();
+  toast(added+' image'+(added===1?'':'s')+' attached.');
+}
+
+function removeImage(nodeId, imgId){
+  const n = state.nodes[nodeId]; if(!n) return;
+  patchNode(nodeId, {imgs: imgsOf(n).filter(x=>x!==imgId)});
+  dropImage(imgId);
+  render();
+}
+
+function lightbox(rec){
+  const host = document.getElementById('modalHost');
+  host.innerHTML = `<div class="lightbox" id="lb"><img src="${esc(rec.data)}" alt="${esc(rec.name||'Card image')}">
+    <div class="lb-cap">${esc(rec.name||'')} · added by ${esc(rec.by||'Unsigned')}</div></div>`;
+  const close = ()=>{ host.innerHTML=''; document.removeEventListener('keydown', onEsc); };
+  const onEsc = e=>{ if(e.key==='Escape') close(); };
+  document.addEventListener('keydown', onEsc);
+  host.querySelector('#lb').onclick = close;
+}
+
+/* points roll up from units into their faction and sub-faction branches */
+function ownPoints(n){ const v = parseFloat(n && n.points); return isNaN(v) ? 0 : v; }
+function rolledPoints(id){
+  return descendants(id).reduce((t,d)=>{
+    const n = state.nodes[d];
+    return t + (n && n.kind==='unit' ? ownPoints(n) : 0);
+  }, 0);
+}
+
+/* ==========================================================================
    NODE OPERATIONS
    ========================================================================== */
 function childrenOf(pid){
@@ -764,6 +935,7 @@ function deleteNode(id){
   const all = [id, ...kids];
   all.forEach(nid=>{
     annsFor(nid).forEach(a=>dropAnn(a.id));
+    imgsOf(state.nodes[nid]).forEach(dropImage);
     dropNode(nid);
   });
   if(state.selected && all.includes(state.selected)) state.selected=null;
@@ -849,16 +1021,11 @@ function nodeRow(n, depth){
   el.className = 'node';
 
   const row = document.createElement('div');
-  row.className = 'row'+(state.selected===n.id?' sel':'')+(dim?' dim':'');
+  row.className = 'row'+(state.selected===n.id?' sel':'')+(dim?' dim':'')+(kids.length?' branch':'');
 
-  const twist = document.createElement('button');
-  twist.className = 'twist'+(kids.length?'':' leaf');
-  twist.textContent = isOpen?'–':'+';
-  twist.setAttribute('aria-label', isOpen?'Collapse branch':'Expand branch');
-  twist.onclick = e=>{ e.stopPropagation();
-    if(state.collapsed.has(n.id)) state.collapsed.delete(n.id); else state.collapsed.add(n.id);
-    persistCollapsed(); renderTree();
-  };
+  const twist = document.createElement('span');
+  twist.className = 'twist'+(kids.length?'':' leaf')+(isOpen?' open':'');
+  twist.textContent = '▸';
 
   const kind = document.createElement('span');
   kind.className = 'kind k-'+n.kind;
@@ -870,7 +1037,8 @@ function nodeRow(n, depth){
   title.className = 'rowtitle';
   title.textContent = n.title || '(untitled '+KINDS[n.kind].label.toLowerCase()+')';
   if(!n.title) title.style.color='var(--ink-3)';
-  title.onclick = ()=>{ select(n.id); };
+  /* the title opens the record without collapsing the branch under it */
+  title.onclick = e=>{ e.stopPropagation(); select(n.id); };
   const meta = document.createElement('div');
   meta.className = 'rowmeta';
   meta.innerHTML =
@@ -881,6 +1049,24 @@ function nodeRow(n, depth){
     (openA?'<span class="ann">'+openA+' open note'+(openA===1?'':'s')+'</span>':
      ann.length?'<span>'+ann.length+' note'+(ann.length===1?'':'s')+'</span>':'');
   main.append(title, meta);
+
+  const imgCount = imgsOf(n).length;
+  let imgTag = null;
+  if(imgCount){
+    imgTag = document.createElement('span');
+    imgTag.className = 'hasimg';
+    imgTag.textContent = imgCount===1 ? '1 card' : imgCount+' cards';
+  }
+
+  /* own cost on a unit; rolled-up total on a faction or sub-faction branch */
+  let ptsTag = null;
+  const own = ownPoints(n);
+  const roll = (n.kind==='faction'||n.kind==='subfaction') ? rolledPoints(n.id) : 0;
+  if(own || roll){
+    ptsTag = document.createElement('span');
+    ptsTag.className = 'pts'+(own?'':' roll');
+    ptsTag.textContent = own ? own+' pts' : roll.toLocaleString()+' pts total';
+  }
 
   const st = document.createElement('span');
   st.className = 'status '+STATUSES[n.status||'submitted'].cls;
@@ -900,7 +1086,23 @@ function nodeRow(n, depth){
   del.setAttribute('aria-label','Delete '+(n.title||'this record'));
   del.onclick = e=>{ e.stopPropagation(); confirmDelete(n.id); };
 
-  row.append(twist, kind, main, st, add, del);
+  row.append(twist, kind, main);
+  if(imgTag) row.append(imgTag);
+  if(ptsTag) row.append(ptsTag);
+  row.append(st, add, del);
+
+  /* clicking anywhere else on the row opens and closes the branch */
+  if(kids.length){
+    row.setAttribute('role','button');
+    row.setAttribute('aria-expanded', String(isOpen));
+    row.onclick = ()=>{
+      if(state.collapsed.has(n.id)) state.collapsed.delete(n.id); else state.collapsed.add(n.id);
+      persistCollapsed(); renderTree();
+    };
+  } else {
+    row.onclick = ()=>select(n.id);
+  }
+
   el.appendChild(row);
 
   if(kids.length && isOpen){
@@ -950,6 +1152,11 @@ function renderRecord(){
   const path = ancestry(n.id);
   const ann = annsFor(n.id);
   const allowed = KINDS[n.kind].children;
+  const rollTotal = (n.kind==='faction'||n.kind==='subfaction') ? rolledPoints(n.id) : 0;
+  const unitCount = descendants(n.id).filter(d=>state.nodes[d] && state.nodes[d].kind==='unit').length;
+  const rollLine = rollTotal ? `<div class="rec-foot" style="border-top:none;padding-top:0;margin-top:-4px">
+      ${unitCount} unit${unitCount===1?'':'s'} underneath, ${rollTotal.toLocaleString()} points costed so far.
+    </div>` : '';
 
   host.innerHTML = `
     <div class="rec-hd">
@@ -978,10 +1185,20 @@ function renderRecord(){
       </div>
     </div>
 
-    <div class="field">
-      <label class="flab" for="fTags">Tags</label>
-      <input id="fTags" type="text" value="${esc(n.tags||'')}" placeholder="e.g. tidewatch, playtest, needs costing">
+    <div class="maprow">
+      <div><label class="flab" for="fPoints">Points cost</label>
+        <input id="fPoints" type="text" inputmode="decimal" value="${esc(n.points||'')}" placeholder="e.g. 125"
+          style="width:100%;background:rgba(255,255,255,.55);border:1px solid var(--rule);padding:8px 10px;font-family:var(--form);font-size:14px"></div>
+      <div><label class="flab" for="fTags">Tags</label>
+        <input id="fTags" type="text" value="${esc(n.tags||'')}" placeholder="tidewatch, needs costing"
+          style="width:100%;background:rgba(255,255,255,.55);border:1px solid var(--rule);padding:8px 10px;font-size:14px"></div>
     </div>
+    ${rollLine}
+
+    <div class="ann-hd">Card images <span>${imgsOf(n).length} attached</span></div>
+    <div class="img-strip" id="imgStrip"></div>
+    <button class="img-add" id="imgAdd">+ Attach a card image</button>
+    <div class="img-hint">Photos and screenshots are shrunk before storing. You can also paste an image straight into this panel.</div>
 
     <div class="rec-foot">
       Filed by ${esc(n.author||'Unsigned')} · ${esc(when(n.created))}<br>
@@ -1010,14 +1227,31 @@ function renderRecord(){
   const t = host.querySelector('#fTitle');
   const b = host.querySelector('#fBody');
   const g = host.querySelector('#fTags');
+  const p = host.querySelector('#fPoints');
   let timer;
+  const vals = ()=>({title:t.value, body:b.value, tags:g.value, points:p.value.trim()});
   const push = () => { clearTimeout(timer); timer = setTimeout(()=>{
-    patchNode(n.id,{title:t.value, body:b.value, tags:g.value});
+    patchNode(n.id, vals());
     renderTree(); renderCounts();
   }, 500); };
-  [t,b,g].forEach(el=>el.addEventListener('input',push));
-  [t,b,g].forEach(el=>el.addEventListener('blur',()=>{clearTimeout(timer);
-    patchNode(n.id,{title:t.value, body:b.value, tags:g.value}); renderTree(); renderCounts();}));
+  [t,b,g,p].forEach(el=>el.addEventListener('input',push));
+  [t,b,g,p].forEach(el=>el.addEventListener('blur',()=>{clearTimeout(timer);
+    patchNode(n.id, vals()); renderTree(); renderCounts();}));
+
+  /* card images */
+  renderImages(n, host);
+  host.querySelector('#imgAdd').onclick = ()=>{
+    const f = document.createElement('input');
+    f.type='file'; f.accept='image/*'; f.multiple = true;
+    f.onchange = ()=>{ if(f.files && f.files.length) addImages(n.id, [...f.files]); };
+    f.click();
+  };
+  host.onpaste = e=>{
+    const items = [...(e.clipboardData?.items||[])].filter(i=>i.kind==='file' && i.type.startsWith('image/'));
+    if(!items.length) return;
+    e.preventDefault();
+    addImages(n.id, items.map(i=>i.getAsFile()).filter(Boolean));
+  };
 
   host.querySelectorAll('#fStatus button').forEach(btn=>{
     btn.onclick = ()=>{ patchNode(n.id,{status:btn.dataset.st}); render(); };
@@ -1051,6 +1285,25 @@ function renderRecord(){
   });
   host.querySelectorAll('[data-ann-del]').forEach(btn=>{
     btn.onclick = ()=>{ dropAnn(btn.dataset.annDel); render(); };
+  });
+}
+
+function renderImages(n, host){
+  const box = host.querySelector('#imgStrip');
+  if(!box) return;
+  const ids = imgsOf(n);
+  if(!ids.length){ box.innerHTML = '<div class="img-empty">No card images yet.</div>'; return; }
+  box.innerHTML = ids.map(id=>`<div class="thumb" data-img="${esc(id)}"><div class="thumb-load">…</div></div>`).join('');
+  ids.forEach(async id=>{
+    let rec = null;
+    try{ rec = await getImage(id); }catch(e){ /* offline or removed */ }
+    const el = box.querySelector('[data-img="'+CSS.escape(id)+'"]');
+    if(!el) return;
+    if(!rec || !rec.data){ el.innerHTML = '<div class="thumb-load">missing</div>'; return; }
+    el.innerHTML = `<img src="${esc(rec.data)}" alt="${esc(rec.name||'Card image')}">
+      <button class="thumb-x" title="Remove this image">✕</button>`;
+    el.querySelector('img').onclick = ()=>lightbox(rec);
+    el.querySelector('.thumb-x').onclick = e=>{ e.stopPropagation(); removeImage(n.id, id); };
   });
 }
 
@@ -1258,8 +1511,12 @@ function boardMarkdown(){
   let out = '# Cyclopean — '+(state.board==='register'?'Register':'Mechanics')+'\n\n';
   const walk = (n, d) => {
     const pad='  '.repeat(d);
+    const imgs = imgsOf(n).length;
     out += pad+'- **'+(n.title||'(untitled)')+'** — '+KINDS[n.kind].label+
-           ' · '+STATUSES[n.status||'submitted'].label+' · '+(n.author||'Unsigned')+'\n';
+           ' · '+STATUSES[n.status||'submitted'].label+
+           (n.points?' · '+n.points+' pts':'')+
+           (imgs?' · '+imgs+' card image'+(imgs===1?'':'s'):'')+
+           ' · '+(n.author||'Unsigned')+'\n';
     if(n.body) out += pad+'  \n'+n.body.split('\n').map(l=>pad+'  '+l).join('\n')+'\n';
     annsFor(n.id).forEach(a=>{
       out += pad+'  - _'+(a.author||'Unsigned')+(a.done?', resolved':'')+':_ '+a.text.replace(/\n/g,' ')+'\n';
@@ -1532,10 +1789,16 @@ function oobUnitBody(u, sets){
   if(boolv(u.squadron)) L.push(['Squadron', 'yes']);
   if(u.rules && String(u.rules).trim()) L.push(['Special rules', String(u.rules).trim()]);
   if(u.cn && String(u.cn).trim()) L.push(['Alternate name', String(u.cn).trim()]);
-  const pts = (u.override && String(u.override).trim()) ? String(u.override).trim()+' (override)' : u.points;
-  L.push(['Points', (pts===0 || pts==='0') ? 'not yet costed' : pts]);
   return L.filter(([,v])=>v!==undefined && v!==null && v!=='')
           .map(([k,v])=>k+': '+v).join('\n');
+}
+
+/* the override wins when set, otherwise the calculated cost if it is non-zero */
+function oobPoints(u){
+  const o = String(u.override ?? '').trim();
+  if(o && numv(o)) return String(numv(o));
+  const p = numv(u.points);
+  return p ? String(p) : '';
 }
 
 /* the leading entry in `rules` is usually the lineage — Deep One, Tidewatch, Eldritch */
@@ -1562,6 +1825,7 @@ function oobMapRow(sets){
       title: String(u.name||'').trim() || 'Untitled unit',
       srcFac: setLabel(sets, u.set, u.faction),
       sub: oobLeadRule(u),
+      points: oobPoints(u),
       raw: u,
       body: oobUnitBody(u, sets),
       weapons: (u.weapons||[]).map(w=>({title:String(w.name||'Weapon').trim(), body:oobWeapon(w)})),
@@ -1790,11 +2054,11 @@ function stageArmyImport(cfg){
 }
 
 /* ---- silent node creation used by the importer ---- */
-function makeNode(kind, parentId, title, body, tags){
+function makeNode(kind, parentId, title, body, tags, extra){
   const parent = parentId ? state.nodes[parentId] : null;
   const board  = parent ? parent.board : (KINDS[kind].board || 'register');
   const sibs   = parentId ? childrenOf(parentId) : rootsOf(board);
-  const n = {
+  const n = Object.assign({
     id: uid(KINDS[kind].code.toLowerCase()),
     parent: parentId || null,
     board, kind,
@@ -1802,10 +2066,11 @@ function makeNode(kind, parentId, title, body, tags){
     body: body || '',
     status: 'submitted',
     tags: tags || '',
+    points: '',
     author: state.who || 'Unsigned',
     created: now(), updated: now(), updatedBy: state.who || 'Unsigned',
     order: sibs.length ? (sibs[sibs.length-1].order||0)+1 : 0
-  };
+  }, extra || {});
   putNode(n);
   return n.id;
 }
@@ -1841,7 +2106,8 @@ function commitArmyImport(rows, cfg){
       parentId = subCache[ck];
     }
 
-    const nodeId = makeNode(cfg.kind, parentId, r.title, r.body, r.tags || 'imported');
+    const nodeId = makeNode(cfg.kind, parentId, r.title, r.body, r.tags || 'imported',
+                            r.points ? {points:String(r.points)} : null);
     units++;
     const allowed = KINDS[cfg.kind].children;
     if(allowed.includes('wargear')) r.weapons.forEach(w=>{ makeNode('wargear', nodeId, w.title, w.body, 'imported'); kids++; });
