@@ -1,0 +1,170 @@
+# Resistance roster. Source of truth for unit names and string IDs.
+# Field meanings and ID conventions are documented at the top of combine.toml.
+
+[faction]
+id = "resistance"
+name = "Resistance"
+ucs = 32002000
+blurb = "Citizens of City 17, risen up against the Combine."
+vanilla_race = "allies"
+ucs_range = [32002000, 32002999]
+retired_ucs = []
+
+[[units]]
+id = "scavenger_crew"
+name = "Scavenger Crew"
+ucs = 32002010
+blurb = "Builds barricades, repairs vehicles and strips wrecks for parts."
+role = "builder"
+tier = 0
+clone_from = "Engineer Squad"
+vanilla_bp = ""
+status = "planned"
+
+[[units]]
+id = "rebel_squad"
+name = "Rebel Squad"
+ucs = 32002020
+blurb = "Armed citizens. Cheap, numerous, and they upgrade with captured weapons."
+role = "line infantry"
+tier = 1
+clone_from = "Riflemen Squad"
+vanilla_bp = ""
+status = "planned"
+
+[[units]]
+id = "scout_jalopy"
+name = "Scout Jalopy"
+ucs = 32002030
+blurb = "Fast stripped-down car for scouting and harassment."
+role = "recon"
+tier = 1
+clone_from = "Jeep"
+vanilla_bp = ""
+status = "planned"
+
+[[units]]
+id = "vortigaunt_squad"
+name = "Vortigaunts"
+ucs = 32002040
+blurb = "Freed Vortigaunts. They channel vortal energy to attack and heal."
+role = "elite infantry"
+tier = 1
+clone_from = "Ranger Squad"
+vanilla_bp = ""
+status = "planned"
+
+[[units]]
+id = "crossbow_sniper"
+name = "Crossbow Sniper"
+ucs = 32002050
+blurb = "Fires superheated rebar. Silent and deadly at range."
+role = "sniper"
+tier = 2
+clone_from = "Sniper"
+vanilla_bp = ""
+status = "planned"
+
+[[units]]
+id = "salvaged_turret_team"
+name = "Salvaged Turret Team"
+ucs = 32002060
+blurb = "A captured Combine emplacement gun, rewired for the Resistance."
+role = "suppression"
+tier = 2
+clone_from = ".30 Cal Heavy Machine Gun Team"
+vanilla_bp = ""
+status = "planned"
+
+[[units]]
+id = "rebel_mortar"
+name = "Pipe Mortar Team"
+ucs = 32002070
+blurb = "Improvised mortar built from scrap pipe."
+role = "indirect fire"
+tier = 2
+clone_from = "Mortar Team"
+vanilla_bp = ""
+status = "planned"
+
+[[units]]
+id = "armored_truck"
+name = "Armoured Truck"
+ucs = 32002080
+blurb = "A plated truck that carries rebels and reinforces squads in the field."
+role = "transport"
+tier = 3
+clone_from = "M3 Half-track"
+vanilla_bp = ""
+status = "planned"
+
+[[units]]
+id = "rocket_rebels"
+name = "Rocket Rebels"
+ucs = 32002090
+blurb = "Laser-guided RPGs. The Resistance's answer to Combine armour."
+role = "anti-armour"
+tier = 3
+clone_from = "Airborne Squad"
+vanilla_bp = ""
+status = "planned"
+
+[[units]]
+id = "gun_buggy"
+name = "Gun Buggy"
+ucs = 32002100
+blurb = "Scout buggy with a salvaged tau cannon."
+role = "light vehicle"
+tier = 3
+clone_from = "M8 Armored Car"
+vanilla_bp = ""
+status = "planned"
+
+[[units]]
+id = "hacked_apc"
+name = "Hacked APC"
+ucs = 32002110
+blurb = "A captured Combine APC, rewired and repainted in Lambda orange."
+role = "main battle unit"
+tier = 4
+clone_from = "M4 Sherman"
+vanilla_bp = ""
+status = "planned"
+
+[[units]]
+id = "magnusson_team"
+name = "Magnusson Team"
+ucs = 32002120
+blurb = "Carries Magnusson devices: sticky charges that tear apart Striders."
+role = "heavy anti-armour"
+tier = 4
+clone_from = "M10 Tank Destroyer"
+vanilla_bp = ""
+status = "planned"
+
+[[doctrines]]
+id = "lambda_uprising"
+name = "Lambda Uprising"
+ucs = 32002500
+blurb = "Rally the city. More rebels, better armed."
+clone_from = "Infantry Doctrine"
+abilities = ["Rally cry", "Lambda supply cache", "Veteran rebels", "Medkit drop"]
+ultimate = "Freeman sighting"
+
+[[doctrines]]
+id = "vortal_coalition"
+name = "Vortal Coalition"
+ucs = 32002510
+blurb = "Fight alongside the Vortigaunts and the creatures of Xen."
+clone_from = "Airborne Doctrine"
+abilities = ["Vortal healing", "Vortal blast", "Antlion lure", "Vortigaunt elders"]
+ultimate = "Antlion Guard"
+
+[[doctrines]]
+id = "white_forest"
+name = "White Forest"
+ucs = 32002520
+blurb = "Engineering support from the White Forest base."
+clone_from = "Armor Doctrine"
+abilities = ["Magnusson devices", "Rocket barrage", "Hacked turrets", "Field repairs"]
+ultimate = "Magnusson strike team"

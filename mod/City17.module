@@ -1,0 +1,37 @@
+; ============================================================================
+; City 17 module definition. Copied to the game root by tools\install-dev.ps1.
+;
+; UNVERIFIED: Relic changed the .module format in patch 2.400, and Corsix's
+; Mod Studio still writes the old format. Before relying on this file, compare
+; it line by line with RelicCOH.module in your own install (that file is the
+; authority) and fix this template to match. Doing that is the first task of M1.
+; ============================================================================
+
+[global]
+
+UIName = City 17
+Name = City17
+Description = The Combine occupation of City 17. A Half-Life 2 total conversion.
+DllName = WW2Mod
+ModFolder = City17
+ModVersion = 0.0.1
+TextureFolder = Art\Textures\
+ScenarioPackFolder = Scenarios\
+
+; Our files first, then the vanilla game underneath. Anything we don't
+; override falls through to vanilla. Copy the WW2 entries (folder and archive
+; names) exactly from RelicCOH.module.
+[attrib:common]
+folder.01 = City17\Data\attrib
+folder.02 = WW2\Data\attrib
+
+[data:common]
+folder.01 = City17\Data
+folder.02 = WW2\Data
+
+[data:english]
+folder.01 = City17\Locale\English\Data
+folder.02 = WW2\Locale\English\Data
+
+[locale:english]
+folder.01 = City17\Locale\English

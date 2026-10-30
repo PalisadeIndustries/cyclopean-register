@@ -1,0 +1,18 @@
+# General strings: UI, resources, territory. One per line: <id><TAB><text>
+# Unit, doctrine and faction names do NOT go here. They come from design/*.toml.
+# Range for this file: 32000000-32000999. Never reuse a retired ID.
+
+# --- mod ---
+32000000	City 17
+32000001	The Combine occupation of City 17, from Half-Life 2.
+
+# --- resources ---
+32000100	Manpower
+32000101	Munitions
+32000102	Power
+
+# --- territory ---
+32000200	Sector Point
+32000201	Supply Cache
+32000202	Power Node
+32000203	Victory Point

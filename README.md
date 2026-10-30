@@ -1,90 +1,73 @@
-# Cyclopean — Submissions Register
+# City 17 — a Company of Heroes total conversion
 
-A collaborative workboard for the Cyclopean rules project. Contributors file
-factions, units, and abilities into a branching register, propose mechanics on a
-second board, and annotate anything.
+**Working title.** This is a fan-made total conversion of *Company of Heroes* (CoH 1 /
+Legacy Edition) that turns the game into the Combine occupation of City 17 from
+*Half-Life 2*: the Combine Overwatch against the Resistance.
 
----
+Non-commercial fan project. Not affiliated with Relic, SEGA or Valve. See
+[`docs/asset-policy.md`](docs/asset-policy.md) before adding any art or audio.
 
-## For contributors
+## Status
 
-1. Open the link.
-2. Type your name into **Filed by** in the top bar. Everything you file or
-   annotate is attributed to it.
-That is the whole setup. The board connects to the shared database on its own —
-the dot next to **Sync** in the top bar turns green once it has. If it does not,
-you are working on a private copy in your own browser and nobody else can see
-your records; reload and check your connection.
+**M0 — Groundwork.** Design docs, unit rosters, the strings pipeline and the dev
+install script are in place. Nothing has been loaded into the game yet. The first
+job of M1 is getting `City17.module` to launch. See [`docs/roadmap.md`](docs/roadmap.md).
 
-### Filing a record
+## How it works
 
-The big **+** at the bottom starts a new faction. The small **+** on any row
-files something underneath it — units under factions, abilities and wargear
-under units. The **✕** deletes a record and everything beneath it.
+CoH 1 has its four races built into the engine DLL, so this mod **reskins existing
+race slots** instead of adding new ones:
 
-Click a title to open the record on the right, where you can edit it, set its
-status, and leave annotations. Annotations get resolved rather than deleted, so
-an open objection stays visible until someone closes it.
+| Mod faction | Uses the vanilla slot of | Why it fits |
+|---|---|---|
+| **Combine Overwatch** | Wehrmacht (`axis`) | Tiered, defensive, expensive elite units, veterancy bought centrally |
+| **Resistance** | US Forces (`allies`) | Cheap flexible infantry, engineers, light vehicles, call-ins |
 
-**Move to…** reparents a record. It only offers destinations that legitimately
-accept that kind, so a unit sees factions and an ability sees units.
+Commonwealth and Panzer Elite slots are left alone for now. See
+[`docs/technical-plan.md`](docs/technical-plan.md).
 
-### Importing from Order of Battle
+## Repository layout
 
-Import / export → **Import an army list**, or drop the exported `.json` into the
-normal file import. Order of Battle's format is recognised automatically: units
-arrive with their full stat line, weapons become wargear children, and abilities
-become ability children with their element cost resolved.
-
-Before anything is filed you get an assignment table where you pick which
-faction each unit belongs to. Units whose faction already exists on the board
-are matched for you.
-
----
-
-## For whoever maintains this
-
-### Publishing
-
-The site is a single self-contained `index.html`. To update it, replace that
-file and commit. GitHub Pages redeploys within a minute or two.
-
-### The database
-
-Records live in a Firebase Realtime Database, not in this repository, so
-deploying never touches anyone's work. Free tier covers this comfortably. The
-config is compiled into `index.html`, which is why contributors have nothing to
-set up. A Firebase web config is not a secret — the rules below are what protect
-the data.
-
-Rules should be scoped to the board path:
-
-```json
-{
-  "rules": {
-    "boards": {
-      "$board": {
-        ".read": true,
-        ".write": true
-      }
-    }
-  }
-}
+```
+docs/            design and technical documents (start with design.md)
+design/          faction rosters as TOML. These are the source of truth for unit names and string IDs
+locale/          extra UI strings (UTF-8 TSV), compiled into the game's .ucs format
+tools/           modtool.py (validate + build strings), install-dev.ps1 (link into the game)
+mod/
+  City17.module  module definition, copied to the game's root folder
+  City17/        the mod folder the game loads (Data/, Art/, Locale/)
 ```
 
-Do not leave the console's default test-mode rules in place — they expire after
-a trial period and the board silently stops syncing.
+## Quick start (Windows, for contributors)
 
-To close the board to anyone who finds the database URL in this public
-repository, enable **Anonymous** sign-in under Authentication and change both
-rules to `"auth != null"`. The site already signs in anonymously on load, so
-nothing needs rebuilding and contributors see no login screen.
+Requirements: CoH 1 / Legacy Edition installed and fully patched, Python 3.11+,
+[Corsix's Mod Studio](https://modstudio.corsix.org/), and Git with
+[Git LFS](https://git-lfs.com/) (`git lfs install` once, before cloning).
 
-### Backups
+```powershell
+git clone <this repo>
+cd <repo>
+py tools\modtool.py check                     # validate rosters and strings
+.\tools\install-dev.ps1 -GamePath "C:\Program Files (x86)\Steam\steamapps\common\Company of Heroes Relaunch"
+```
 
-Import / export → **Export JSON** writes the whole board, both tabs, every
-record and annotation. Import merges by last-edited timestamp, so restoring or
-folding in someone else's export is safe. Worth doing before any large import.
+The install script builds the strings, links `mod\City17` into the game folder as a
+junction (so edits show up in-game without copying), and copies `City17.module` next to
+`RelicCOH.exe`. Then launch with:
 
-**Export Markdown** gives the register as an indented outline for the rulebook
-draft.
+```
+RelicCOH.exe -dev -mod City17
+```
+
+or add `-dev -mod City17` to the game's Steam launch options.
+
+## Contributing
+
+- **Adding or renaming a unit:** edit `design/combine.toml` or
+  `design/resistance.toml`, then run `py tools\modtool.py check`. Unit names and
+  string IDs come from these files, so never type a unit name straight into a `.ucs` file.
+- **Adding UI text:** add a line to `locale/english.tsv` in the general ID range.
+- **Attribute (stat) changes:** made in Corsix's Mod Studio on the `.rgd` files under
+  `mod/City17/Data/attrib`. Because `.rgd` is binary, say in the commit message what
+  you changed and why.
+- **Printing the roster for discussion:** `py tools\modtool.py roster` prints Markdown tables.

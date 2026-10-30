@@ -1,0 +1,178 @@
+# Combine Overwatch roster. Source of truth for unit names and string IDs.
+#
+# String IDs: a unit or doctrine with `ucs = N` uses N for its name and N+1 for its
+# blurb. Keep entries on multiples of 10 inside `ucs_range` and never reuse a retired ID.
+# Retired IDs stay in `retired_ucs` so the checker refuses to hand them out again.
+#
+# clone_from  vanilla unit whose blueprint we copy as the starting point
+# vanilla_bp  attribute path of that blueprint. Fill in after extracting the
+#             WW2 attribs with Corsix. Leave empty until checked in-game.
+# status      planned | prototyped | in-game | final
+
+[faction]
+id = "combine"
+name = "Combine Overwatch"
+ucs = 32001000
+blurb = "The occupying army of the Universal Union."
+vanilla_race = "axis"
+ucs_range = [32001000, 32001999]
+retired_ucs = []
+
+[[units]]
+id = "stalker_work_detail"
+name = "Stalker Work Detail"
+ucs = 32001010
+blurb = "Lobotomised labourers that build and maintain Combine structures."
+role = "builder"
+tier = 0
+clone_from = "Pioneer Squad"
+vanilla_bp = ""
+status = "planned"
+
+[[units]]
+id = "civil_protection"
+name = "Civil Protection Squad"
+ucs = 32001020
+blurb = "Metrocops. Cheap, numerous and poorly trained."
+role = "line infantry"
+tier = 1
+clone_from = "Volksgrenadier Squad"
+vanilla_bp = ""
+status = "planned"
+
+[[units]]
+id = "combine_sniper"
+name = "Overwatch Sniper"
+ucs = 32001030
+blurb = "Long-range marksman. The blue laser gives away its aim."
+role = "sniper"
+tier = 1
+clone_from = "Sniper"
+vanilla_bp = ""
+status = "planned"
+
+[[units]]
+id = "pulse_turret_team"
+name = "Pulse Turret Team"
+ucs = 32001040
+blurb = "Crewed emplacement gun that pins infantry in place."
+role = "suppression"
+tier = 1
+clone_from = "MG42 Heavy Machine Gun Team"
+vanilla_bp = ""
+status = "planned"
+
+[[units]]
+id = "overwatch_soldiers"
+name = "Overwatch Soldiers"
+ucs = 32001050
+blurb = "Transhuman infantry with pulse rifles and grenades."
+role = "main infantry"
+tier = 2
+clone_from = "Grenadier Squad"
+vanilla_bp = ""
+status = "planned"
+
+[[units]]
+id = "mortar_synth"
+name = "Mortar Synth"
+ucs = 32001060
+blurb = "Hovering artillery synth that lobs energy shells."
+role = "indirect fire"
+tier = 2
+clone_from = "Mortar Team"
+vanilla_bp = ""
+status = "planned"
+
+[[units]]
+id = "combine_apc"
+name = "Combine APC"
+ucs = 32001070
+blurb = "Armoured transport with a pulse gun and rocket launcher."
+role = "transport"
+tier = 2
+clone_from = "SdKfz 251 Half-track"
+vanilla_bp = ""
+status = "planned"
+
+[[units]]
+id = "overwatch_shotgunners"
+name = "Overwatch Shotgunners"
+ucs = 32001080
+blurb = "Close-quarters assault soldiers for clearing buildings."
+role = "assault infantry"
+tier = 3
+clone_from = "Panzergrenadier Squad"
+vanilla_bp = ""
+status = "planned"
+
+[[units]]
+id = "hunter_pack"
+name = "Hunter Pack"
+ucs = 32001090
+blurb = "Agile synth walkers firing explosive flechettes. Kills light vehicles."
+role = "anti-armour"
+tier = 3
+clone_from = "StuG IV"
+vanilla_bp = ""
+status = "planned"
+
+[[units]]
+id = "overwatch_elite"
+name = "Overwatch Elite"
+ucs = 32001100
+blurb = "Hand-picked soldiers with energy-ball launchers."
+role = "elite infantry"
+tier = 4
+clone_from = "Knight's Cross Holders"
+vanilla_bp = ""
+status = "planned"
+
+[[units]]
+id = "crab_synth"
+name = "Crab Synth"
+ucs = 32001110
+blurb = "Armoured assault synth with twin pulse cannons."
+role = "main battle unit"
+tier = 4
+clone_from = "Panzer IV"
+vanilla_bp = ""
+status = "planned"
+
+[[units]]
+id = "strider"
+name = "Strider"
+ucs = 32001120
+blurb = "Towering synth with a warp cannon. The Combine's heaviest unit."
+role = "super-heavy"
+tier = 4
+clone_from = "Tiger"
+vanilla_bp = ""
+status = "planned"
+
+[[doctrines]]
+id = "sector_lockdown"
+name = "Sector Lockdown Protocol"
+ucs = 32001500
+blurb = "Hold ground with forcefields and automated turrets."
+clone_from = "Defensive Doctrine"
+abilities = ["Forcefield barriers", "Ceiling turrets", "Sentry emplacements", "Overwatch sweep"]
+ultimate = "Citadel Suppression Field"
+
+[[doctrines]]
+id = "pacification"
+name = "Pacification Protocol"
+ucs = 32001510
+blurb = "Rapid deployment by Dropship and air support."
+clone_from = "Blitzkrieg Doctrine"
+abilities = ["Dropship deployment", "Hunter-Chopper strafe", "Shock assault", "APC rush"]
+ultimate = "Strider deployment"
+
+[[doctrines]]
+id = "sterilization"
+name = "Sterilization Protocol"
+ucs = 32001520
+blurb = "Break the uprising through fear and attrition."
+clone_from = "Terror Doctrine"
+abilities = ["Headcrab shell barrage", "Manhack swarm", "Breen broadcast", "Scanner flash"]
+ultimate = "Gunship patrol"
